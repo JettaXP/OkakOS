@@ -14,7 +14,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install dependencies
         run: |
@@ -24,8 +24,10 @@ jobs:
       - name: Prepare Archiso Profile
         run: |
           cp -r /usr/share/archiso/configs/releng ./okakos-profile
+          
           cp -r airootfs ./okakos-profile/
           cp packages.x86_64 ./okakos-profile/packages.x86_64
+          
           mkdir -p ./okakos-profile/airootfs/etc/systemd/system/basic.target.wants/
           ln -sf /etc/systemd/system/okakos67.service ./okakos-profile/airootfs/etc/systemd/system/basic.target.wants/okakos67.service
 
@@ -34,7 +36,7 @@ jobs:
           mkarchiso -v -w /tmp/archiso-tmp -o /tmp/out ./okakos-profile
 
       - name: Upload ISO Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: OkakOS-ISO
           path: /tmp/out/*.iso
