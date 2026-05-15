@@ -1,6 +1,6 @@
 Set-Location C:\Users\paulg\OkakOS
 git add .
-git commit -m "Add okaksh custom shell with fish and easter eggs"
+git commit -m "Fix UTM SE black screen, add welcome screen, set GRUB and Hyprland wallpapers"
 $token = Get-Content C:\Users\paulg\token.txt -Raw
 $token = $token.Trim()
 $remote = "https://jettaxp:" + $token + "@github.com/JettaXP/OkakOS.git"
