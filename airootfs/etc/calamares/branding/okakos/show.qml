@@ -5,7 +5,7 @@ Presentation {
     id: presentation
 
     Timer {
-        interval: 5000
+        interval: 4000
         running: true
         repeat: true
         onTriggered: presentation.goToNextSlide()
@@ -14,15 +14,7 @@ Presentation {
     Slide {
         Text {
             anchors.centerIn: parent
-            text: "Установка началась. OkakOS готовится..."
-            font.pixelSize: 24
-            color: "cyan"
-        }
-    }
-    Slide {
-        Text {
-            anchors.centerIn: parent
-            text: "Копируем пасхалки на жесткий диск...\nЦифра 67 уже летит в систему."
+            text: "Установка OkakOS началась.\nГенерируем 67 гигабайт энтропии..."
             font.pixelSize: 24
             horizontalAlignment: Text.AlignHCenter
             color: "cyan"
@@ -31,8 +23,36 @@ Presentation {
     Slide {
         Text {
             anchors.centerIn: parent
-            text: "Спойлер: systemd на месте, но зато с красивым ASCII артом."
+            text: "ВНИМАНИЕ! Ваш жесткий диск прямо сейчас\nжестко форматируется под файловую систему Fat67."
             font.pixelSize: 24
+            horizontalAlignment: Text.AlignHCenter
+            color: "red"
+        }
+    }
+    Slide {
+        Text {
+            anchors.centerIn: parent
+            text: "Копируем пасхалки... 67% завершено.\nШучу, мы даже не начинали."
+            font.pixelSize: 24
+            horizontalAlignment: Text.AlignHCenter
+            color: "cyan"
+        }
+    }
+    Slide {
+        Text {
+            anchors.centerIn: parent
+            text: "Сикс Севен одобряет этот дистрибутив.\nВместо systemd мы установили... а нет, всё-таки systemd."
+            font.pixelSize: 24
+            horizontalAlignment: Text.AlignHCenter
+            color: "cyan"
+        }
+    }
+    Slide {
+        Text {
+            anchors.centerIn: parent
+            text: "Осталось 67 секунд...\nНаверное. Кто вообще верит этим таймерам в установщиках?"
+            font.pixelSize: 24
+            horizontalAlignment: Text.AlignHCenter
             color: "cyan"
         }
     }
