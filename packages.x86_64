@@ -6,6 +6,7 @@ wofi
 networkmanager
 nano
 git
+fish
 
 # --- Installer ---
 calamares
