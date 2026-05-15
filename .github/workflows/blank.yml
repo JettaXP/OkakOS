@@ -31,7 +31,6 @@ jobs:
           su - builder -c "git clone https://aur.archlinux.org/calamares.git /tmp/calamares"
           su - builder -c "cd /tmp/calamares && makepkg -s --noconfirm"
           
-          # Создаем локальный репозиторий
           mkdir -p /tmp/custom_repo
           cp /tmp/calamares/*.pkg.tar.zst /tmp/custom_repo/
           repo-add /tmp/custom_repo/custom.db.tar.gz /tmp/custom_repo/*.pkg.tar.zst
@@ -39,6 +38,10 @@ jobs:
       - name: Prepare Archiso Profile
         run: |
           cp -r /usr/share/archiso/configs/releng ./okakos-profile
+          
+          sed -i 's/Arch Linux/OkakOS 67/g' ./okakos-profile/syslinux/*.cfg
+          sed -i 's/Arch Linux/OkakOS 67/g' ./okakos-profile/grub/grub.cfg
+          sed -i 's/Arch Linux/OkakOS 67/g' ./okakos-profile/efiboot/loader/entries/*.conf 2>/dev/null || true
           
           echo "[custom]" >> ./okakos-profile/pacman.conf
           echo "SigLevel = Optional TrustAll" >> ./okakos-profile/pacman.conf
