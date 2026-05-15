@@ -1,0 +1,23 @@
+---
+componentName:  okakos
+welcomeStyleCalamares:   true
+welcomeExpandingLogo:   true
+windowExpanding:    normal
+windowSize: 800px,600px
+windowPlacement: center
+
+strings:
+    productName:         OkakOS 67
+    shortProductName:    OkakOS
+    version:             2026.05
+    shortVersion:        26.05
+    versionedName:       OkakOS 67 "Easter Egg Edition"
+    shortVersionedName:  OkakOS 67
+    bootloaderEntryName: OkakOS
+
+images:
+    productLogo:         "logo.png"
+    productIcon:         "logo.png"
+    productWelcome:      "languages.png"
+
+slideshow:               "show.qml"

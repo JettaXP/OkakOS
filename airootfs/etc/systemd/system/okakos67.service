@@ -1,0 +1,14 @@
+[Unit]
+Description=OkakOS 67 Boot Easter Egg
+DefaultDependencies=no
+After=sysinit.target
+Before=basic.target
+
+[Service]
+Type=oneshot
+StandardOutput=tty
+TTYPath=/dev/console
+ExecStart=/usr/bin/bash -c "echo -e '\e[1;36m\n  /$$$$$$  /$$$$$$$$\n /$$__  $$|_____ $$ \n| $$  \\__/     /$$/ \n| $$$$$$$     /$$/  \n| $$__  $$   /$$/   \n| $$  \\ $$  /$$/    \n|  $$$$$$/ /$$/     \n \\______/ |__/      \n                    \e[0m'"
+
+[Install]
+WantedBy=basic.target

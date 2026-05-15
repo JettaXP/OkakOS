@@ -1,0 +1,12 @@
+# --- OkakOS Custom Packages ---
+hyprland
+kitty
+waybar
+wofi
+networkmanager
+nano
+git
+
+# --- Installer ---
+calamares
+calamares-config
