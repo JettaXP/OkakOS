@@ -16,17 +16,37 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install dependencies
+      - name: Install base dependencies
         run: |
           pacman -Syu --noconfirm
-          pacman -S --noconfirm archiso base-devel
+          pacman -S --noconfirm archiso base-devel git sudo
+
+      - name: Create unprivileged user for AUR
+        run: |
+          useradd -m -G wheel builder
+          echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+
+      - name: Build Calamares from AUR
+        run: |
+          su - builder -c "git clone https://aur.archlinux.org/calamares.git /tmp/calamares"
+          su - builder -c "cd /tmp/calamares && makepkg -s --noconfirm"
+          
+          # Создаем локальный репозиторий
+          mkdir -p /tmp/custom_repo
+          cp /tmp/calamares/*.pkg.tar.zst /tmp/custom_repo/
+          repo-add /tmp/custom_repo/custom.db.tar.gz /tmp/custom_repo/*.pkg.tar.zst
 
       - name: Prepare Archiso Profile
         run: |
           cp -r /usr/share/archiso/configs/releng ./okakos-profile
           
+          echo "[custom]" >> ./okakos-profile/pacman.conf
+          echo "SigLevel = Optional TrustAll" >> ./okakos-profile/pacman.conf
+          echo "Server = file:///tmp/custom_repo" >> ./okakos-profile/pacman.conf
+
           cp -r airootfs ./okakos-profile/
           
+          sed -i '/calamares-config/d' packages.x86_64
           cat packages.x86_64 >> ./okakos-profile/packages.x86_64
           
           mkdir -p ./okakos-profile/airootfs/etc/systemd/system/basic.target.wants/
