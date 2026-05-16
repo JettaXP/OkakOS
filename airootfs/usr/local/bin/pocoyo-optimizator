@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+
+show_header() {
+    echo "╔══════════════════════════════════════════╗"
+    echo "║          Pocoyo Optimizator              ║"
+    echo "║    Программа оптимизации от OkakOS       ║"
+    echo "╚══════════════════════════════════════════╝"
+    echo ""
+    echo "Добро пожаловать в Pocoyo Optimizator!"
+    echo "Это программа для оптимизации компьютера от OkakOS."
+    echo ""
+}
+
+show_menu() {
+    echo "Пожалуйста выберите пункт (1-5):"
+    echo ""
+    echo "1. Запустить Pocoyo Optimizator"
+    echo "2. Очистить кэш"
+    echo "3. Ускорить систему"
+    echo "4. О программе"
+    echo "5. Выход"
+    echo ""
+    echo -n "Ваш выбор: "
+}
+
+while true; do
+    clear
+    show_header
+    show_menu
+
+    read choice
+
+    case $choice in
+        1)
+            echo "Запуск оптимизации..."
+            echo "Шутка! Сикс Севен запрещает удалять систему. Оптимизация 'завершена'!"
+            read -p "Нажмите Enter для продолжения..."
+            ;;
+        2)
+            echo "Очистка кэша..."
+            sudo pacman -Scc --noconfirm
+            echo "Готово!"
+            read -p "Нажмите Enter для продолжения..."
+            ;;
+        3)
+            echo "Ускорение системы..."
+            echo "Шутка! Твои файлы в /home в безопасности."
+            echo "Готово!"
+            read -p "Нажмите Enter для продолжения..."
+            ;;
+        4)
+            echo ""
+            echo "Pocoyo Optimizator v1.0"
+            echo "Разработано для OkakOS"
+            echo "Автор: jettax"
+            read -p "Нажмите Enter для продолжения..."
+            ;;
+        5)
+            echo "Пока!"
+            exit 0
+            ;;
+        *)
+            echo "Неверный пункт, попробуй снова"
+            read -p "Нажмите Enter для продолжения..."
+            ;;
+    esac
+done

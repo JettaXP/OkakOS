@@ -8,6 +8,7 @@ networkmanager
 nano
 git
 fish
+sddm
 
 # --- Installer ---
 calamares
