@@ -1,6 +1,10 @@
 fish_add_path ~/.local/bin
 if status is-interactive
     set fish_greeting
+    if test "$TERM" != "linux"
+        starship init fish | source
+        enable_transience
+    end
     function fish_prompt
         set -l current_user (whoami)
         set -l current_dir (prompt_pwd)
@@ -14,7 +18,7 @@ if status is-interactive
         set_color yellow
         echo -n "$current_dir "
         set_color normal
-        echo -n "> "
+        echo -n "~> "
     end
     function fish_command_not_found
         set_color red
