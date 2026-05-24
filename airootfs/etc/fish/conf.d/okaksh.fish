@@ -1,14 +1,12 @@
-fish_add_path ~/.local/bin
+if status is-login
+    fish_add_path ~/.local/bin
+end
 if status is-interactive
     set fish_greeting
-    if test "$TERM" != "linux"
-        starship init fish | source
-        enable_transience
-    end
     function fish_prompt
         set -l current_user (whoami)
         set -l current_dir (prompt_pwd)
-        set -l current_host (hostname)
+        set -l current_host (cat /etc/hostname 2>/dev/null; or echo "OkakOS")
         set_color cyan
         echo -n "$current_user"
         set_color normal

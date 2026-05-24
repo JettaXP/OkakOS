@@ -1,0 +1,9 @@
+NAME="OkakOS"
+PRETTY_NAME="OkakOS 67"
+ID=okakos
+ID_LIKE=arch
+BUILD_ID=rolling
+HOME_URL="https://github.com/jettaxp/okakos"
+DOCUMENTATION_URL="https://jettax.xyz/okakos"
+SUPPORT_URL="https://t.me/jettaxp"
+LOGO=okakos

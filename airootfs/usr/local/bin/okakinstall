@@ -1,0 +1,3 @@
+#!/bin/bash
+# OkakInstall — Installer for OkakOS 67
+sudo calamares

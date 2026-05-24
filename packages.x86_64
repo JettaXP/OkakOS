@@ -1,15 +1,23 @@
-# --- OkakOS Custom Packages ---
-hyprland
-hyprpaper
-kitty
-waybar
-wofi
+# --- OkakOS 67 Desktop ---
+plasma-desktop
+konsole
+dolphin
+foot
+sddm
+xorg-server
+
+# --- System ---
 networkmanager
 nano
 git
 fish
-sddm
+fastfetch
+xdg-user-dirs
+grub
+efibootmgr
+os-prober
+base-devel
+sudo
 
 # --- Installer ---
 calamares
-calamares-config
