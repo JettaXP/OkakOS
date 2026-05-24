@@ -7,11 +7,6 @@ on:
 
 permissions:
   contents: write
-          pacman -Syu --noconfirm
-          pacman -S --noconfirm archiso base-devel git sudo squashfs-tools python-build python-installer python-wheel python-setuptools
-
-      - name: Checkout repository
-        uses: actions/checkout@v4
 
 jobs:
   build:
@@ -23,6 +18,8 @@ jobs:
     steps:
       - name: Install base dependencies
         run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm archiso base-devel git sudo squashfs-tools python-build python-installer python-wheel python-setuptools
 
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -128,15 +125,30 @@ jobs:
           license=('GPL-3.0-only')
           depends=(
             'arch-install-scripts'
-            'python'
-            'python-parted'
-            'python-pytz'
-            'python-simple-term-menu'
-            'python-systemd'
             'btrfs-progs'
+            'coreutils'
+            'cryptsetup'
             'dosfstools'
             'e2fsprogs'
+            'f2fs-tools'
+            'glibc'
+            'kbd'
+            'libcrypt.so'
+            'libfido2'
+            'libxcrypt'
+            'lvm2'
+            'pciutils'
+            'procps-ng'
+            'python'
+            'python-cryptography'
+            'python-linkify-it-py'
+            'python-markdown-it-py'
+            'python-pydantic'
+            'python-pyparted'
+            'python-textual'
+            'systemd'
             'util-linux'
+            'xfsprogs'
           )
           
           package() {
@@ -146,7 +158,7 @@ jobs:
           sed -i 's/^          //' /tmp/okakinstall-pkg/PKGBUILD
 
           chown -R builder:builder /tmp/okakinstall-pkg
-          su - builder -c "cd /tmp/okakinstall-pkg && makepkg -f --noconfirm"
+          su - builder -c "cd /tmp/okakinstall-pkg && makepkg -fs --noconfirm"
           cp /tmp/okakinstall-pkg/*.pkg.tar.zst /tmp/custom_repo/
           repo-add /tmp/custom_repo/custom.db.tar.gz /tmp/okakinstall-pkg/*.pkg.tar.zst
 
