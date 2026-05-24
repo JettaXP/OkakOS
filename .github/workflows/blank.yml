@@ -7,6 +7,11 @@ on:
 
 permissions:
   contents: write
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm archiso base-devel git sudo squashfs-tools python-build python-installer python-wheel python-setuptools
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
 jobs:
   build:
@@ -18,11 +23,6 @@ jobs:
     steps:
       - name: Install base dependencies
         run: |
-          pacman -Syu --noconfirm
-          pacman -S --noconfirm archiso base-devel git sudo squashfs-tools python-build python-installer python-wheel python-setuptools
-
-      - name: Checkout repository
-        uses: actions/checkout@v4
 
       - name: Checkout repository
         uses: actions/checkout@v4
