@@ -19,7 +19,10 @@ jobs:
       - name: Install base dependencies
         run: |
           pacman -Syu --noconfirm
-          pacman -S --noconfirm archiso base-devel git sudo squashfs-tools
+          pacman -S --noconfirm archiso base-devel git sudo squashfs-tools python-build python-installer python-wheel python-setuptools
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -37,32 +40,172 @@ jobs:
           cp /tmp/calamares/*.pkg.tar.zst /tmp/custom_repo/
           repo-add /tmp/custom_repo/custom.db.tar.gz /tmp/custom_repo/*.pkg.tar.zst
 
+      - name: Build OkakInstall (rebranded archinstall)
+        run: |
+          # Clone archinstall source
+          git clone https://github.com/archlinux/archinstall /tmp/okakinstall-src
+          cd /tmp/okakinstall-src
+
+          # Rebrand: rename package directory
+          mv archinstall okakinstall
+
+          # Rebrand all Python source files
+          find . -type f -name '*.py' -exec sed -i 's/archinstall/okakinstall/g' {} +
+          find . -type f -name '*.py' -exec sed -i 's/Arch Linux/OkakOS 67/g' {} +
+          find . -type f -name '*.py' -exec sed -i 's/ArchInstall/OkakInstall/g' {} +
+
+          # Inject OkakOS native packages directly into the core installer's pacstrap phase!
+          cat > patch_okakos.py << 'EOF'
+import os
+
+# 1. Patch pacstrap to natively install OkakOS packages along with base system
+installer_path = 'okakinstall/lib/installer.py'
+if os.path.exists(installer_path):
+    with open(installer_path, 'r') as f:
+        content = f.read()
+    
+    # We append our packages to any pacstrap call
+    # The signature is usually def pacstrap(self, *packages: str, **kwargs: Any) -> None:
+    # We will just do a simple replacement
+    replace_from = 'def pacstrap(self, *packages: str, **kwargs: Any) -> None:'
+    replace_to = """def pacstrap(self, *packages: str, **kwargs: Any) -> None:
+        packages = list(packages)
+        okak_pkgs = ["plasma-desktop", "konsole", "dolphin", "foot", "sddm", "xorg-server", "xorg-xhost", "networkmanager", "nano", "git", "fish", "fastfetch", "xdg-user-dirs", "base-devel", "sudo"]
+        for p in okak_pkgs:
+            if p not in packages:
+                packages.append(p)
+"""
+    content = content.replace(replace_from, replace_to)
+    
+    with open(installer_path, 'w') as f:
+        f.write(content)
+
+# 2. Patch guided.py to apply settings (os-release, sddm, etc.) at the very end seamlessly
+guided_path = 'okakinstall/scripts/guided.py'
+if os.path.exists(guided_path):
+    with open(guided_path, 'r') as f:
+        content = f.read()
+        
+    replace_from_main = 'if __name__ == "__main__":'
+    replace_to_main = """
+def apply_okak_settings():
+    import subprocess, os
+    if os.path.exists("/mnt/etc"):
+        subprocess.run("cp /usr/local/bin/okakos-post-install.sh /mnt/root/ && arch-chroot /mnt bash /root/okakos-post-install.sh && rm -f /mnt/root/okakos-post-install.sh", shell=True)
+
+if __name__ == "__main__":
+    import atexit
+    atexit.register(apply_okak_settings)
+"""
+    content = content.replace(replace_from_main, replace_to_main)
+    with open(guided_path, 'w') as f:
+        f.write(content)
+EOF
+          python patch_okakos.py
+
+          # Rebrand project metadata
+          sed -i 's/archinstall/okakinstall/g' pyproject.toml
+          sed -i 's/Arch Linux/OkakOS 67/g' pyproject.toml
+
+          # Rebrand translation files
+          find . -type f \( -name '*.po' -o -name '*.pot' \) -exec sed -i 's/archinstall/okakinstall/g' {} +
+          find . -type f \( -name '*.po' -o -name '*.pot' \) -exec sed -i 's/Arch Linux/OkakOS 67/g' {} +
+
+          # Rebrand config and data files
+          find . -type f \( -name '*.toml' -o -name '*.cfg' -o -name '*.json' -o -name '*.md' \) -exec sed -i 's/archinstall/okakinstall/g' {} +
+          find . -type f \( -name '*.json' -o -name '*.md' \) -exec sed -i 's/Arch Linux/OkakOS 67/g' {} +
+
+          # Build the Python wheel
+          chown -R builder:builder /tmp/okakinstall-src
+          su - builder -c "cd /tmp/okakinstall-src && python -m build --wheel --no-isolation"
+
+          # Create PKGBUILD for pacman package
+          mkdir -p /tmp/okakinstall-pkg
+          cp /tmp/okakinstall-src/dist/*.whl /tmp/okakinstall-pkg/
+
+          cat > /tmp/okakinstall-pkg/PKGBUILD << 'PKGEOF'
+pkgname=okakinstall
+pkgver=1.0
+pkgrel=1
+pkgdesc='OkakOS 67 Installer'
+arch=('any')
+license=('GPL-3.0-only')
+depends=(
+  'arch-install-scripts'
+  'python'
+  'python-parted'
+  'python-pytz'
+  'python-simple-term-menu'
+  'python-systemd'
+  'btrfs-progs'
+  'dosfstools'
+  'e2fsprogs'
+  'util-linux'
+)
+
+package() {
+    python -m installer --destdir="$pkgdir" /tmp/okakinstall-pkg/*.whl
+}
+PKGEOF
+
+          chown -R builder:builder /tmp/okakinstall-pkg
+          su - builder -c "cd /tmp/okakinstall-pkg && makepkg -f --noconfirm"
+          cp /tmp/okakinstall-pkg/*.pkg.tar.zst /tmp/custom_repo/
+          repo-add /tmp/custom_repo/custom.db.tar.gz /tmp/okakinstall-pkg/*.pkg.tar.zst
+
       - name: Prepare OkakOS Profile
         run: |
           cp -r /usr/share/archiso/configs/releng ./okakos-profile
+
+          # Remove bloat packages from releng profile
+          sed -i '/^archinstall$/d' ./okakos-profile/packages.x86_64
+          sed -i '/^zsh$/d' ./okakos-profile/packages.x86_64
+          sed -i '/^grml-zsh-config$/d' ./okakos-profile/packages.x86_64
+          sed -i '/^vim$/d' ./okakos-profile/packages.x86_64
+
+          # Rebrand boot menus
           sed -i 's/Arch Linux/OkakOS 67/g' ./okakos-profile/syslinux/*.cfg 2>/dev/null || true
           sed -i 's/Arch Linux/OkakOS 67/g' ./okakos-profile/grub/grub.cfg 2>/dev/null || true
           sed -i 's/Arch Linux/OkakOS 67/g' ./okakos-profile/efiboot/loader/entries/*.conf 2>/dev/null || true
           sed -i 's/archlinux/okakos/g' ./okakos-profile/syslinux/*.cfg 2>/dev/null || true
           sed -i 's/archlinux/okakos/g' ./okakos-profile/grub/grub.cfg 2>/dev/null || true
+
+          # Replace splash image
+          cp splash.png ./okakos-profile/syslinux/splash.png 2>/dev/null || true
+
+          # Add custom repo for calamares and okakinstall
           echo "" >> ./okakos-profile/pacman.conf
           echo "[custom]" >> ./okakos-profile/pacman.conf
           echo "SigLevel = Optional TrustAll" >> ./okakos-profile/pacman.conf
           echo "Server = file:///tmp/custom_repo" >> ./okakos-profile/pacman.conf
+
+          # Copy OkakOS overlay files
           cp -r airootfs/* ./okakos-profile/airootfs/
+          # Add okakinstall to package list
+          echo 'okakinstall' >> ./okakos-profile/packages.x86_64
           cat packages.x86_64 >> ./okakos-profile/packages.x86_64
+
+          # Python package provides /usr/bin/okakinstall but our bash wrapper overrides it
+          # via /usr/local/bin/okakinstall (higher PATH priority) for GUI/CLI detection
+
+          # Enable services
           mkdir -p ./okakos-profile/airootfs/etc/systemd/system/basic.target.wants/
           ln -sf /etc/systemd/system/okakos67.service ./okakos-profile/airootfs/etc/systemd/system/basic.target.wants/okakos67.service
-          mkdir -p ./okakos-profile/airootfs/etc/systemd/system/display-manager.service.wants/
-          ln -sf /usr/lib/systemd/system/sddm.service ./okakos-profile/airootfs/etc/systemd/system/display-manager.service.wants/sddm.service
+
+          # Remove default liveuser autologin so our pocoyo autologin works
+          rm -f ./okakos-profile/airootfs/etc/systemd/system/getty@tty1.service.d/autologin.conf 2>/dev/null || true
+
           mkdir -p ./okakos-profile/airootfs/etc/systemd/system/multi-user.target.wants/
           ln -sf /usr/lib/systemd/system/NetworkManager.service ./okakos-profile/airootfs/etc/systemd/system/multi-user.target.wants/NetworkManager.service
           chmod +x ./okakos-profile/airootfs/usr/local/bin/*
+
+          # Rebrand ISO metadata and enable XZ compression
           if [ -f ./okakos-profile/profiledef.sh ]; then
             sed -i 's/iso_name="archlinux"/iso_name="okakos"/g' ./okakos-profile/profiledef.sh
             sed -i 's/iso_label="ARCH_/iso_label="OKAKOS_/g' ./okakos-profile/profiledef.sh
             sed -i "s/iso_publisher=\"Arch Linux/iso_publisher=\"OkakOS/g" ./okakos-profile/profiledef.sh
             sed -i "s/iso_application=\"Arch Linux/iso_application=\"OkakOS/g" ./okakos-profile/profiledef.sh
+            sed -i "s/^airootfs_image_tool_options.*/airootfs_image_tool_options=('-comp' 'xz' '-b' '1M')/g" ./okakos-profile/profiledef.sh
           fi
 
       - name: Build ISO
