@@ -47,6 +47,15 @@ jobs:
 
           mv archinstall okakinstall
 
+          find . -type l | while read link; do
+            target=$(readlink "$link")
+            if echo "$target" | grep -q "archinstall"; then
+              new_target=$(echo "$target" | sed 's/archinstall/okakinstall/g')
+              ln -sfn "$new_target" "$link"
+            fi
+          done
+
+
           find . -type f -name '*.py' -exec sed -i 's/archinstall/okakinstall/g' {} +
           find . -type f -name '*.py' -exec sed -i 's/Arch Linux/OkakOS 67/g' {} +
           find . -type f -name '*.py' -exec sed -i 's/ArchInstall/OkakInstall/g' {} +
