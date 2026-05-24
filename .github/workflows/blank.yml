@@ -16,13 +16,13 @@ jobs:
       options: --privileged
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
       - name: Install base dependencies
         run: |
           pacman -Syu --noconfirm
           pacman -S --noconfirm archiso base-devel git sudo squashfs-tools
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Create unprivileged user for AUR
         run: |
