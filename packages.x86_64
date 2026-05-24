@@ -1,12 +1,9 @@
-# --- OkakOS 67 Desktop ---
 plasma-desktop
 konsole
 dolphin
 foot
 sddm
 xorg-server
-
-# --- System ---
 networkmanager
 nano
 git
@@ -18,6 +15,4 @@ efibootmgr
 os-prober
 base-devel
 sudo
-
-# --- Installer ---
 calamares
