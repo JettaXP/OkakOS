@@ -111,29 +111,30 @@ jobs:
           cp /tmp/okakinstall-src/dist/*.whl /tmp/okakinstall-pkg/
 
           cat > /tmp/okakinstall-pkg/PKGBUILD << 'PKGEOF'
-pkgname=okakinstall
-pkgver=1.0
-pkgrel=1
-pkgdesc='OkakOS 67 Installer'
-arch=('any')
-license=('GPL-3.0-only')
-depends=(
-  'arch-install-scripts'
-  'python'
-  'python-parted'
-  'python-pytz'
-  'python-simple-term-menu'
-  'python-systemd'
-  'btrfs-progs'
-  'dosfstools'
-  'e2fsprogs'
-  'util-linux'
-)
-
-package() {
-    python -m installer --destdir="$pkgdir" /tmp/okakinstall-pkg/*.whl
-}
-PKGEOF
+          pkgname=okakinstall
+          pkgver=1.0
+          pkgrel=1
+          pkgdesc='OkakOS 67 Installer'
+          arch=('any')
+          license=('GPL-3.0-only')
+          depends=(
+            'arch-install-scripts'
+            'python'
+            'python-parted'
+            'python-pytz'
+            'python-simple-term-menu'
+            'python-systemd'
+            'btrfs-progs'
+            'dosfstools'
+            'e2fsprogs'
+            'util-linux'
+          )
+          
+          package() {
+              python -m installer --destdir="$pkgdir" /tmp/okakinstall-pkg/*.whl
+          }
+          PKGEOF
+          sed -i 's/^          //' /tmp/okakinstall-pkg/PKGBUILD
 
           chown -R builder:builder /tmp/okakinstall-pkg
           su - builder -c "cd /tmp/okakinstall-pkg && makepkg -f --noconfirm"
