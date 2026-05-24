@@ -52,46 +52,47 @@ jobs:
           find . -type f -name '*.py' -exec sed -i 's/ArchInstall/OkakInstall/g' {} +
 
           cat > patch_okakos.py << 'EOF'
-import os
-
-installer_path = 'okakinstall/lib/installer.py'
-if os.path.exists(installer_path):
-    with open(installer_path, 'r') as f:
-        content = f.read()
-    
-    replace_from = 'def pacstrap(self, *packages: str, **kwargs: Any) -> None:'
-    replace_to = """def pacstrap(self, *packages: str, **kwargs: Any) -> None:
-        packages = list(packages)
-        okak_pkgs = ["plasma-desktop", "konsole", "dolphin", "foot", "sddm", "xorg-server", "xorg-xhost", "networkmanager", "nano", "git", "fish", "fastfetch", "xdg-user-dirs", "base-devel", "sudo"]
-        for p in okak_pkgs:
-            if p not in packages:
-                packages.append(p)
-"""
-    content = content.replace(replace_from, replace_to)
-    
-    with open(installer_path, 'w') as f:
-        f.write(content)
-
-guided_path = 'okakinstall/scripts/guided.py'
-if os.path.exists(guided_path):
-    with open(guided_path, 'r') as f:
-        content = f.read()
-        
-    replace_from_main = 'if __name__ == "__main__":'
-    replace_to_main = """
-def apply_okak_settings():
-    import subprocess, os
-    if os.path.exists("/mnt/etc"):
-        subprocess.run("cp /usr/local/bin/okakos-post-install.sh /mnt/root/ && arch-chroot /mnt bash /root/okakos-post-install.sh && rm -f /mnt/root/okakos-post-install.sh", shell=True)
-
-if __name__ == "__main__":
-    import atexit
-    atexit.register(apply_okak_settings)
-"""
-    content = content.replace(replace_from_main, replace_to_main)
-    with open(guided_path, 'w') as f:
-        f.write(content)
-EOF
+          import os
+          
+          installer_path = 'okakinstall/lib/installer.py'
+          if os.path.exists(installer_path):
+              with open(installer_path, 'r') as f:
+                  content = f.read()
+              
+              replace_from = 'def pacstrap(self, *packages: str, **kwargs: Any) -> None:'
+              replace_to = """def pacstrap(self, *packages: str, **kwargs: Any) -> None:
+                  packages = list(packages)
+                  okak_pkgs = ["plasma-desktop", "konsole", "dolphin", "foot", "sddm", "xorg-server", "xorg-xhost", "networkmanager", "nano", "git", "fish", "fastfetch", "xdg-user-dirs", "base-devel", "sudo"]
+                  for p in okak_pkgs:
+                      if p not in packages:
+                          packages.append(p)
+          """
+              content = content.replace(replace_from, replace_to)
+              
+              with open(installer_path, 'w') as f:
+                  f.write(content)
+          
+          guided_path = 'okakinstall/scripts/guided.py'
+          if os.path.exists(guided_path):
+              with open(guided_path, 'r') as f:
+                  content = f.read()
+                  
+              replace_from_main = 'if __name__ == "__main__":'
+              replace_to_main = """
+          def apply_okak_settings():
+              import subprocess, os
+              if os.path.exists("/mnt/etc"):
+                  subprocess.run("cp /usr/local/bin/okakos-post-install.sh /mnt/root/ && arch-chroot /mnt bash /root/okakos-post-install.sh && rm -f /mnt/root/okakos-post-install.sh", shell=True)
+          
+          if __name__ == "__main__":
+              import atexit
+              atexit.register(apply_okak_settings)
+          """
+              content = content.replace(replace_from_main, replace_to_main)
+              with open(guided_path, 'w') as f:
+                  f.write(content)
+          EOF
+          sed -i 's/^          //' patch_okakos.py
           python patch_okakos.py
 
           sed -i 's/archinstall/okakinstall/g' pyproject.toml
