@@ -4,6 +4,7 @@ dolphin
 foot
 sddm
 xorg-server
+xorg-xhost
 networkmanager
 nano
 git

@@ -1,7 +1,7 @@
 [Desktop Entry]
-Name=OkakInstall
-Comment=Установщик OkakOS 67
-Exec=sudo calamares
+Name=OkakInstall GUI
+Comment=Графический установщик OkakOS 67 (Calamares)
+Exec=sh -c 'xhost +SI:localuser:root 2>/dev/null; sudo -E env QT_QPA_PLATFORM=xcb calamares'
 Icon=system-software-install
 Terminal=false
 Type=Application
