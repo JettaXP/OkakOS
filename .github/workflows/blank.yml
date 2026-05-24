@@ -1,92 +1,101 @@
-    name: Build OkakOS ISO
+name: Build OkakOS ISO
 
-    on:
-      push:
-        branches: [ "main" ]
-      workflow_dispatch:
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
 
-    jobs:
-      build:
-        runs-on: ubuntu-latest
-        container:
-          image: archlinux:latest
-          options: --privileged
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:latest
+      options: --privileged
 
-        steps:
-          - name: Checkout repository
-            uses: actions/checkout@v4
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-          - name: Install base dependencies
-            run: |
-              pacman -Syu --noconfirm
-              pacman -S --noconfirm archiso base-devel git sudo squashfs-tools
+      - name: Install base dependencies
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm archiso base-devel git sudo squashfs-tools
 
-          - name: Create unprivileged user for AUR
-            run: |
-              useradd -m -G wheel builder
-              echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+      - name: Create unprivileged user for AUR
+        run: |
+          useradd -m -G wheel builder
+          echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
-          - name: Build Calamares from AUR
-            run: |
-              su - builder -c "git clone https://aur.archlinux.org/calamares.git /tmp/calamares"
-              su - builder -c "cd /tmp/calamares && makepkg -s --noconfirm"
+      - name: Build Calamares from AUR
+        run: |
+          su - builder -c "git clone https://aur.archlinux.org/calamares.git /tmp/calamares"
+          su - builder -c "cd /tmp/calamares && makepkg -s --noconfirm"
+          mkdir -p /tmp/custom_repo
+          cp /tmp/calamares/*.pkg.tar.zst /tmp/custom_repo/
+          repo-add /tmp/custom_repo/custom.db.tar.gz /tmp/custom_repo/*.pkg.tar.zst
 
-              mkdir -p /tmp/custom_repo
-              cp /tmp/calamares/*.pkg.tar.zst /tmp/custom_repo/
-              repo-add /tmp/custom_repo/custom.db.tar.gz /tmp/custom_repo/*.pkg.tar.zst
+      - name: Prepare OkakOS Profile
+        run: |
+          cp -r /usr/share/archiso/configs/releng ./okakos-profile
+          sed -i 's/Arch Linux/OkakOS 67/g' ./okakos-profile/syslinux/*.cfg 2>/dev/null || true
+          sed -i 's/Arch Linux/OkakOS 67/g' ./okakos-profile/grub/grub.cfg 2>/dev/null || true
+          sed -i 's/Arch Linux/OkakOS 67/g' ./okakos-profile/efiboot/loader/entries/*.conf 2>/dev/null || true
+          sed -i 's/archlinux/okakos/g' ./okakos-profile/syslinux/*.cfg 2>/dev/null || true
+          sed -i 's/archlinux/okakos/g' ./okakos-profile/grub/grub.cfg 2>/dev/null || true
+          echo "" >> ./okakos-profile/pacman.conf
+          echo "[custom]" >> ./okakos-profile/pacman.conf
+          echo "SigLevel = Optional TrustAll" >> ./okakos-profile/pacman.conf
+          echo "Server = file:///tmp/custom_repo" >> ./okakos-profile/pacman.conf
+          cp -r airootfs/* ./okakos-profile/airootfs/
+          cat packages.x86_64 >> ./okakos-profile/packages.x86_64
+          mkdir -p ./okakos-profile/airootfs/etc/systemd/system/basic.target.wants/
+          ln -sf /etc/systemd/system/okakos67.service ./okakos-profile/airootfs/etc/systemd/system/basic.target.wants/okakos67.service
+          mkdir -p ./okakos-profile/airootfs/etc/systemd/system/display-manager.service.wants/
+          ln -sf /usr/lib/systemd/system/sddm.service ./okakos-profile/airootfs/etc/systemd/system/display-manager.service.wants/sddm.service
+          mkdir -p ./okakos-profile/airootfs/etc/systemd/system/multi-user.target.wants/
+          ln -sf /usr/lib/systemd/system/NetworkManager.service ./okakos-profile/airootfs/etc/systemd/system/multi-user.target.wants/NetworkManager.service
+          chmod +x ./okakos-profile/airootfs/usr/local/bin/*
+          if [ -f ./okakos-profile/profiledef.sh ]; then
+            sed -i 's/iso_name="archlinux"/iso_name="okakos"/g' ./okakos-profile/profiledef.sh
+            sed -i 's/iso_label="ARCH_/iso_label="OKAKOS_/g' ./okakos-profile/profiledef.sh
+            sed -i "s/iso_publisher=\"Arch Linux/iso_publisher=\"OkakOS/g" ./okakos-profile/profiledef.sh
+            sed -i "s/iso_application=\"Arch Linux/iso_application=\"OkakOS/g" ./okakos-profile/profiledef.sh
+          fi
 
-          - name: Prepare OkakOS Profile
-            run: |
-              cp -r /usr/share/archiso/configs/releng ./okakos-profile
+      - name: Build ISO
+        run: |
+          mkarchiso -v -w /tmp/archiso-tmp -o /tmp/out ./okakos-profile
 
-              sed -i 's/Arch Linux/OkakOS 67/g' ./okakos-profile/syslinux/*.cfg 2>/dev/null || true
-              sed -i 's/Arch Linux/OkakOS 67/g' ./okakos-profile/grub/grub.cfg 2>/dev/null || true
-              sed -i 's/Arch Linux/OkakOS 67/g' ./okakos-profile/efiboot/loader/entries/*.conf 2>/dev/null || true
-              sed -i 's/archlinux/okakos/g' ./okakos-profile/syslinux/*.cfg 2>/dev/null || true
-              sed -i 's/archlinux/okakos/g' ./okakos-profile/grub/grub.cfg 2>/dev/null || true
+      - name: Rename ISO
+        run: |
+          cd /tmp/out
+          for f in *.iso; do
+            DATE=$(date +%Y.%m.%d)
+            mv "$f" "OkakOS-67-${DATE}.iso"
+          done
 
-              echo "" >> ./okakos-profile/pacman.conf
-              echo "[custom]" >> ./okakos-profile/pacman.conf
-              echo "SigLevel = Optional TrustAll" >> ./okakos-profile/pacman.conf
-              echo "Server = file:///tmp/custom_repo" >> ./okakos-profile/pacman.conf
+      - name: Upload ISO Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: OkakOS-ISO
+          path: /tmp/out/*.iso
+          retention-days: 7
 
-              cp -r airootfs/* ./okakos-profile/airootfs/
+      - name: Create Release Tag
+        id: tag
+        run: |
+          TAG="build-$(date +%Y%m%d-%H%M%S)"
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions"
+          git tag $TAG
+          git push origin $TAG
 
-              cat packages.x86_64 >> ./okakos-profile/packages.x86_64
-
-              mkdir -p ./okakos-profile/airootfs/etc/systemd/system/basic.target.wants/
-              ln -sf /etc/systemd/system/okakos67.service ./okakos-profile/airootfs/etc/systemd/system/basic.target.wants/okakos67.service
-
-              mkdir -p ./okakos-profile/airootfs/etc/systemd/system/display-manager.service.wants/
-              ln -sf /usr/lib/systemd/system/sddm.service ./okakos-profile/airootfs/etc/systemd/system/display-manager.service.wants/sddm.service
-
-              mkdir -p ./okakos-profile/airootfs/etc/systemd/system/multi-user.target.wants/
-              ln -sf /usr/lib/systemd/system/NetworkManager.service ./okakos-profile/airootfs/etc/systemd/system/multi-user.target.wants/NetworkManager.service
-
-              chmod +x ./okakos-profile/airootfs/usr/local/bin/*
-
-              if [ -f ./okakos-profile/profiledef.sh ]; then
-                sed -i 's/iso_name="archlinux"/iso_name="okakos"/g' ./okakos-profile/profiledef.sh
-                sed -i 's/iso_label="ARCH_/iso_label="OKAKOS_/g' ./okakos-profile/profiledef.sh
-                sed -i "s/iso_publisher=\"Arch Linux/iso_publisher=\"OkakOS/g" ./okakos-profile/profiledef.sh
-                sed -i "s/iso_application=\"Arch Linux/iso_application=\"OkakOS/g" ./okakos-profile/profiledef.sh
-              fi
-
-          - name: Build ISO
-            run: |
-              mkarchiso -v -w /tmp/archiso-tmp -o /tmp/out ./okakos-profile
-
-          - name: Rename ISO
-            run: |
-              cd /tmp/out
-              for f in *.iso; do
-                DATE=$(date +%Y.%m.%d)
-                mv "$f" "OkakOS-67-${DATE}.iso"
-              done
-
-          - name: Upload ISO Artifact
-            uses: actions/upload-artifact@v4
-            with:
-              name: OkakOS-ISO
-              path: /tmp/out/*.iso
-              retention-days: 7
+      - name: Upload ISO to Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          name: "OkakOS 67 - ${{ steps.tag.outputs.tag }}"
+          files: /tmp/out/*.iso
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
