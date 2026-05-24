@@ -5,6 +5,9 @@ on:
     branches: [ "main" ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -88,8 +91,8 @@ jobs:
           echo "tag=$TAG" >> $GITHUB_OUTPUT
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
-          git config --global --add safe.directory /__w/OkakOS/OkakOS
-          cd /__w/OkakOS/OkakOS
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          cd "$GITHUB_WORKSPACE"
           git tag $TAG
           git push origin $TAG
 
