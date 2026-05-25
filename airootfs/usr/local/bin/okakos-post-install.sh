@@ -27,6 +27,7 @@ echo "[OkakOS] lsb-release configured"
 
 if [ -f /etc/default/grub ]; then
     sed -i 's/^GRUB_DISTRIBUTOR=.*/GRUB_DISTRIBUTOR="OkakOS 67"/' /etc/default/grub
+    echo 'GRUB_BACKGROUND="/usr/share/grub/background.jpg"' >> /etc/default/grub
     if command -v grub-mkconfig &> /dev/null; then
         grub-mkconfig -o /boot/grub/grub.cfg 2>/dev/null || true
     fi
