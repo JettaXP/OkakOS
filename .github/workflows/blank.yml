@@ -19,7 +19,7 @@ jobs:
       - name: Install base dependencies
         run: |
           pacman -Syu --noconfirm
-          pacman -S --noconfirm archiso base-devel git sudo squashfs-tools python-build python-installer python-wheel python-setuptools
+          pacman -S --noconfirm archiso base-devel git sudo squashfs-tools python-build python-installer python-wheel python-setuptools imagemagick
 
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -171,7 +171,8 @@ jobs:
           sed -i 's/archlinux/okakos/g' ./okakos-profile/syslinux/*.cfg 2>/dev/null || true
           sed -i 's/archlinux/okakos/g' ./okakos-profile/grub/grub.cfg 2>/dev/null || true
 
-          cp splash.png ./okakos-profile/syslinux/splash.png 2>/dev/null || true
+          cp airootfs/usr/share/grub/background.jpg ./okakos-profile/syslinux/splash.jpg 2>/dev/null || true
+          magick ./okakos-profile/syslinux/splash.jpg -resize 640x480\! ./okakos-profile/syslinux/splash.png 2>/dev/null || true
 
           echo "" >> ./okakos-profile/pacman.conf
           echo "[custom]" >> ./okakos-profile/pacman.conf
