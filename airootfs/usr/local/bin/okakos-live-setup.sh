@@ -1,16 +1,5 @@
 #!/bin/bash
 
-# Print OkakOS logo to console
-echo -e '\e[1;32m
-  /$$$$$$  /$$$$$$$$
- /$$__  $$|_____ $$ 
-| $$  \__/     /$$/ 
-| $$$$$$$     /$$/  
-| $$__  $$   /$$/   
-| $$  \ $$  /$$/    
-|  $$$$$$/ /$$/     
- \______/ |__/      
-\e[0m' > /dev/console
 
 # Disable SDDM completely
 systemctl disable sddm.service -f 2>/dev/null || true
