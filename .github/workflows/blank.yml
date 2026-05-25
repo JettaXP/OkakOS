@@ -83,17 +83,11 @@ jobs:
               with open(guided_path, 'r') as f:
                   content = f.read()
                   
-              replace_from_main = 'if __name__ == "__main__":'
-              replace_to_main = """
-          def apply_okak_settings():
-              import subprocess, os
-              if os.path.exists("/mnt/etc"):
-                  subprocess.run("cp /usr/local/bin/okakos-post-install.sh /mnt/root/ && arch-chroot /mnt bash /root/okakos-post-install.sh && rm -f /mnt/root/okakos-post-install.sh", shell=True)
-          
-          if __name__ == "__main__":
-              import atexit
-              atexit.register(apply_okak_settings)
-          """
+              replace_from_main = 'installation.genfstab()'
+              replace_to_main = """import subprocess, os
+          TABTABif os.path.exists("/mnt/etc"):
+          TABTABTABsubprocess.run("cp /usr/local/bin/okakos-post-install.sh /mnt/root/ && arch-chroot /mnt bash /root/okakos-post-install.sh && rm -f /mnt/root/okakos-post-install.sh", shell=True)
+          TABTABinstallation.genfstab()""".replace("TAB", chr(9))
               content = content.replace(replace_from_main, replace_to_main)
               with open(guided_path, 'w') as f:
                   f.write(content)
