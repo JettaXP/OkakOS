@@ -7,7 +7,7 @@ if (-not (Test-Path .git)) {
 git add --all
 
 try {
-  git commit -m "CI: fix build placeholder and secure push.ps1`n`nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>" -q
+  git commit -m "CI: fix build placeholder and secure push.ps1" -q
 } catch {
   Write-Host "No changes to commit"
 }
