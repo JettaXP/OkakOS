@@ -9,7 +9,7 @@ rm -f /etc/systemd/system/display-manager.service 2>/dev/null || true
 mkdir -p /root/.config
 cat > /root/.bash_profile << 'EOF'
 if [ -z "$DISPLAY" ] && [ "$XDG_VTNR" -eq 1 ]; then
-    dbus-run-session startplasma-wayland
+    startplasma-wayland
 fi
 EOF
 
