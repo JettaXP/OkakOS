@@ -8,7 +8,7 @@ Before=basic.target
 Type=oneshot
 StandardOutput=tty
 TTYPath=/dev/console
-ExecStart=/usr/bin/bash -c "echo -e '\e[1;32m\n  /$$$$$$$$$$$$  /$$$$$$$$$$$$$$$$\n /$$$$__  $$$$|_____ $$$$ \n| $$$$  \\__/     /$$$$/ \n| $$$$$$$$$$$$$$     /$$$$/  \n| $$$$__  $$$$   /$$$$/   \n| $$$$  \\ $$$$  /$$$$/    \n|  $$$$$$$$$$$$/ /$$$$/     \n \\______/ |__/      \n                    \e[0m'; /usr/local/bin/okakos-live-setup.sh"
+ExecStart=/usr/local/bin/okakos-live-setup.sh
 
 [Install]
 WantedBy=basic.target
