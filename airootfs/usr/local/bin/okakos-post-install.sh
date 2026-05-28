@@ -9,24 +9,50 @@ PRETTY_NAME="OkakOS 67"
 ID=okakos
 ID_LIKE=arch
 BUILD_ID=rolling
-HOME_URL="https://github.com/jettaxp/okakos"
-DOCUMENTATION_URL="https://jettax.xyz/okakos"
+VERSION="67"
+VERSION_ID="67"
+HOME_URL="https://jettax.xyz/okakos"
+BUG_REPORT_URL="https://github.com/jettaxp/okakos"
 SUPPORT_URL="https://t.me/jettaxp"
 LOGO=okakos
 OSEOF
 
-echo "[OkakOS] os-release configured"
-
 cat > /etc/lsb-release << 'LSBEOF'
 DISTRIB_ID=OkakOS
-DISTRIB_RELEASE=rolling
+DISTRIB_RELEASE=67
 DISTRIB_DESCRIPTION="OkakOS 67"
 LSBEOF
 
-echo "[OkakOS] lsb-release configured"
+echo "[OkakOS] os-release configured"
+
+cp -f /run/archiso/airootfs/etc/fastfetch/config.jsonc /etc/fastfetch/config.jsonc 2>/dev/null || mkdir -p /etc/fastfetch && cp /etc/fastfetch/config.jsonc /etc/fastfetch/config.jsonc 2>/dev/null || true
+cp -rf /run/archiso/airootfs/usr/share/fastfetch/logos /usr/share/fastfetch/ 2>/dev/null || true
+
+cp -rf /run/archiso/airootfs/etc/fish /etc/ 2>/dev/null || true
+cp -rf /run/archiso/airootfs/etc/skel /etc/ 2>/dev/null || true
+
+cp -rf /run/archiso/airootfs/usr/share/backgrounds /usr/share/ 2>/dev/null || true
+cp -f /run/archiso/airootfs/usr/share/grub/background.jpg /usr/share/grub/background.jpg 2>/dev/null || true
+
+cp -f /run/archiso/airootfs/usr/local/bin/pocoyo-optimizator /usr/local/bin/ 2>/dev/null || true
+cp -f /run/archiso/airootfs/usr/local/bin/67wm-troll /usr/local/bin/ 2>/dev/null || true
+cp -f /run/archiso/airootfs/usr/local/bin/welcome /usr/local/bin/ 2>/dev/null || true
+chmod +x /usr/local/bin/pocoyo-optimizator /usr/local/bin/67wm-troll /usr/local/bin/welcome 2>/dev/null || true
+
+cp -rf /run/archiso/airootfs/usr/share/wayland-sessions /usr/share/ 2>/dev/null || true
+cp -rf /run/archiso/airootfs/usr/share/applications /usr/share/ 2>/dev/null || true
+
+cp -f /run/archiso/airootfs/etc/issue /etc/issue 2>/dev/null || true
+cp -f /run/archiso/airootfs/etc/motd /etc/motd 2>/dev/null || true
+
+echo "[OkakOS] Custom files copied"
 
 if [ -f /etc/default/grub ]; then
     sed -i 's/^GRUB_DISTRIBUTOR=.*/GRUB_DISTRIBUTOR="OkakOS 67"/' /etc/default/grub
+
+    if ! grep -q "GRUB_BACKGROUND" /etc/default/grub; then
+        echo 'GRUB_BACKGROUND="/usr/share/grub/background.jpg"' >> /etc/default/grub
+    fi
 
     if command -v grub-mkconfig &> /dev/null; then
         grub-mkconfig -o /boot/grub/grub.cfg 2>/dev/null || true
