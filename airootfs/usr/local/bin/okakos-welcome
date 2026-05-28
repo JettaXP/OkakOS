@@ -78,7 +78,7 @@ class WelcomeApp(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("OkakOS 67")
-        self.setFixedSize(620, 580)
+        self.setFixedSize(620, 680)
         self.setWindowIcon(QIcon.fromTheme("system-os-installer"))
 
         central = QWidget()
@@ -142,6 +142,16 @@ class WelcomeApp(QMainWindow):
             sec3 = QLabel("🛠️ Утилиты")
             sec3.setObjectName("section")
             layout.addWidget(sec3)
+
+            btn_update = QPushButton("  🔄  Обновить систему")
+            btn_update.setCursor(Qt.PointingHandCursor)
+            btn_update.clicked.connect(lambda: subprocess.Popen(["foot", "-e", "bash", "-c", "sudo pacman -Syu && echo -e '\\nОбновление завершено. Нажмите Enter для выхода.' && read"]))
+            layout.addWidget(btn_update)
+
+            btn_mirrors = QPushButton("  ⚡  Обновить зеркала (Reflector)")
+            btn_mirrors.setCursor(Qt.PointingHandCursor)
+            btn_mirrors.clicked.connect(lambda: subprocess.Popen(["foot", "-e", "bash", "-c", "sudo reflector --latest 20 --protocol https --sort rate --save /etc/pacman.d/mirrorlist && echo -e '\\nЗеркала обновлены. Нажмите Enter для выхода.' && read"]))
+            layout.addWidget(btn_mirrors)
 
             btn_pocoyo = QPushButton("  🎮  Pocoyo Optimizator")
             btn_pocoyo.setCursor(Qt.PointingHandCursor)
