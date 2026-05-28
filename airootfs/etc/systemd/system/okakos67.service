@@ -6,8 +6,7 @@ Before=basic.target
 
 [Service]
 Type=oneshot
-StandardOutput=tty
-TTYPath=/dev/console
+StandardOutput=journal
 ExecStart=/usr/local/bin/okakos-live-setup.sh
 
 [Install]

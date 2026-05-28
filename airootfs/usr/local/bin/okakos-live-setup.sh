@@ -8,7 +8,7 @@ rm -f /etc/systemd/system/display-manager.service 2>/dev/null || true
 # Configure auto-start of Plasma Wayland on tty1 for root
 mkdir -p /root/.config
 cat > /root/.bash_profile << 'EOF'
-if [ -z "$DISPLAY" ] && [ "$XDG_VTNR" -eq 1 ]; then
+if [ -z "$DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
     dbus-run-session startplasma-wayland
 fi
 EOF
