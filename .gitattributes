@@ -1,2 +1,6 @@
 *.sh text eol=lf
-airootfs/usr/local/bin/okakos-live-setup.sh text eol=lf
+airootfs/usr/local/bin/* text eol=lf
+airootfs/etc/fish/conf.d/*.fish text eol=lf
+airootfs/etc/skel/.config/fish/*.fish text eol=lf
+*.jpg binary
+*.png binary

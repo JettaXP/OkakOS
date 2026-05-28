@@ -37,7 +37,8 @@ cp -f /run/archiso/airootfs/usr/share/grub/background.jpg /usr/share/grub/backgr
 cp -f /run/archiso/airootfs/usr/local/bin/pocoyo-optimizator /usr/local/bin/ 2>/dev/null || true
 cp -f /run/archiso/airootfs/usr/local/bin/67wm-troll /usr/local/bin/ 2>/dev/null || true
 cp -f /run/archiso/airootfs/usr/local/bin/welcome /usr/local/bin/ 2>/dev/null || true
-chmod +x /usr/local/bin/pocoyo-optimizator /usr/local/bin/67wm-troll /usr/local/bin/welcome 2>/dev/null || true
+cp -f /run/archiso/airootfs/usr/local/bin/okakos-welcome /usr/local/bin/ 2>/dev/null || true
+chmod +x /usr/local/bin/pocoyo-optimizator /usr/local/bin/67wm-troll /usr/local/bin/welcome /usr/local/bin/okakos-welcome 2>/dev/null || true
 
 cp -rf /run/archiso/airootfs/usr/share/wayland-sessions /usr/share/ 2>/dev/null || true
 cp -rf /run/archiso/airootfs/usr/share/applications /usr/share/ 2>/dev/null || true

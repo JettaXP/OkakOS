@@ -17,3 +17,5 @@ os-prober
 base-devel
 sudo
 calamares
+firefox
+python-pyqt5

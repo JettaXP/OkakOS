@@ -10,4 +10,7 @@ if test -z "$DISPLAY"; and test (tty) = "/dev/tty1"
 end
 EOF
 
+mkdir -p /root/.config/autostart
+cp /usr/share/applications/okakos-welcome.desktop /root/.config/autostart/ 2>/dev/null || true
+
 exit 0

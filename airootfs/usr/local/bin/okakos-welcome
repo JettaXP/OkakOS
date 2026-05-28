@@ -1,0 +1,174 @@
+#!/usr/bin/env python3
+import sys
+import os
+import subprocess
+from PyQt5.QtWidgets import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+
+LIVE_MODE = os.path.exists("/run/archiso")
+
+STYLE = """
+QWidget#main {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+        stop:0 #0a0e17, stop:1 #111827);
+}
+QLabel#title {
+    color: #00ff88;
+    font-size: 32px;
+    font-weight: bold;
+}
+QLabel#subtitle {
+    color: #94a3b8;
+    font-size: 14px;
+}
+QLabel#section {
+    color: #e2e8f0;
+    font-size: 18px;
+    font-weight: bold;
+    padding-top: 10px;
+}
+QPushButton {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+        stop:0 rgba(0,255,136,0.15), stop:1 rgba(0,229,255,0.15));
+    border: 1px solid rgba(0,255,136,0.3);
+    border-radius: 12px;
+    color: #e2e8f0;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 14px 20px;
+    text-align: left;
+}
+QPushButton:hover {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+        stop:0 rgba(0,255,136,0.3), stop:1 rgba(0,229,255,0.3));
+    border: 1px solid rgba(0,255,136,0.6);
+}
+QPushButton#install {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+        stop:0 #00ff88, stop:1 #00e5ff);
+    color: #000;
+    font-size: 16px;
+    padding: 16px 24px;
+    border: none;
+}
+QPushButton#install:hover {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+        stop:0 #33ffaa, stop:1 #33eeff);
+}
+QCheckBox {
+    color: #94a3b8;
+    font-size: 12px;
+    spacing: 8px;
+}
+QCheckBox::indicator {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    border: 1px solid rgba(0,255,136,0.4);
+    background: rgba(0,255,136,0.1);
+}
+QCheckBox::indicator:checked {
+    background: #00ff88;
+    border: 1px solid #00ff88;
+}
+"""
+
+class WelcomeApp(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("OkakOS 67")
+        self.setFixedSize(620, 580)
+        self.setWindowIcon(QIcon.fromTheme("system-os-installer"))
+
+        central = QWidget()
+        central.setObjectName("main")
+        self.setCentralWidget(central)
+        layout = QVBoxLayout(central)
+        layout.setContentsMargins(30, 25, 30, 20)
+        layout.setSpacing(8)
+
+        title = QLabel("OkakOS 67")
+        title.setObjectName("title")
+        title.setAlignment(Qt.AlignCenter)
+        layout.addWidget(title)
+
+        if LIVE_MODE:
+            sub = QLabel("Добро пожаловать в Live-сессию OkakOS!")
+        else:
+            sub = QLabel("Добро пожаловать в OkakOS!")
+        sub.setObjectName("subtitle")
+        sub.setAlignment(Qt.AlignCenter)
+        layout.addWidget(sub)
+
+        layout.addSpacing(12)
+
+        if LIVE_MODE:
+            sec1 = QLabel("⚡ Установка")
+            sec1.setObjectName("section")
+            layout.addWidget(sec1)
+
+            btn_cal = QPushButton("  🖥️  Запустить Calamares (графический установщик)")
+            btn_cal.setObjectName("install")
+            btn_cal.setCursor(Qt.PointingHandCursor)
+            btn_cal.clicked.connect(lambda: subprocess.Popen(["sudo", "calamares"]))
+            layout.addWidget(btn_cal)
+
+            btn_tui = QPushButton("  ⌨️  Запустить OkakInstall (терминальный установщик)")
+            btn_tui.setCursor(Qt.PointingHandCursor)
+            btn_tui.clicked.connect(lambda: subprocess.Popen(["foot", "-e", "sudo", "okakinstall"]))
+            layout.addWidget(btn_tui)
+
+        sec2 = QLabel("🔗 Ссылки")
+        sec2.setObjectName("section")
+        layout.addWidget(sec2)
+
+        btn_web = QPushButton("  🌐  Вебсайт OkakOS")
+        btn_web.setCursor(Qt.PointingHandCursor)
+        btn_web.clicked.connect(lambda: subprocess.Popen(["xdg-open", "https://jettax.xyz/okakos"]))
+        layout.addWidget(btn_web)
+
+        btn_gh = QPushButton("  📦  GitHub репозиторий")
+        btn_gh.setCursor(Qt.PointingHandCursor)
+        btn_gh.clicked.connect(lambda: subprocess.Popen(["xdg-open", "https://github.com/jettaxp/okakos"]))
+        layout.addWidget(btn_gh)
+
+        btn_tg = QPushButton("  💬  Telegram поддержка")
+        btn_tg.setCursor(Qt.PointingHandCursor)
+        btn_tg.clicked.connect(lambda: subprocess.Popen(["xdg-open", "https://t.me/jettaxp"]))
+        layout.addWidget(btn_tg)
+
+        if not LIVE_MODE:
+            sec3 = QLabel("🛠️ Утилиты")
+            sec3.setObjectName("section")
+            layout.addWidget(sec3)
+
+            btn_pocoyo = QPushButton("  🎮  Pocoyo Optimizator")
+            btn_pocoyo.setCursor(Qt.PointingHandCursor)
+            btn_pocoyo.clicked.connect(lambda: subprocess.Popen(["foot", "-e", "bash", "-c", "pocoyo-optimizator"]))
+            layout.addWidget(btn_pocoyo)
+
+        layout.addStretch()
+
+        autostart_cb = QCheckBox("Показывать при входе в систему")
+        autostart_cb.setChecked(True)
+        autostart_cb.stateChanged.connect(self.toggle_autostart)
+        layout.addWidget(autostart_cb, alignment=Qt.AlignCenter)
+
+    def toggle_autostart(self, state):
+        autostart_dir = os.path.expanduser("~/.config/autostart")
+        autostart_file = os.path.join(autostart_dir, "okakos-welcome.desktop")
+        if state == Qt.Checked:
+            os.makedirs(autostart_dir, exist_ok=True)
+            with open(autostart_file, "w") as f:
+                f.write("[Desktop Entry]\nType=Application\nName=OkakOS Welcome\nExec=okakos-welcome\nIcon=system-os-installer\nX-GNOME-Autostart-enabled=true\n")
+        else:
+            if os.path.exists(autostart_file):
+                os.remove(autostart_file)
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    app.setStyleSheet(STYLE)
+    w = WelcomeApp()
+    w.show()
+    sys.exit(app.exec_())

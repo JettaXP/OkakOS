@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=OkakOS Welcome
+GenericName=Welcome App
+Exec=okakos-welcome
+Icon=system-os-installer
+Terminal=false
+Categories=System;
