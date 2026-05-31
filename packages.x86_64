@@ -19,3 +19,5 @@ sudo
 calamares
 firefox
 python-pyqt5
+polkit
+reflector

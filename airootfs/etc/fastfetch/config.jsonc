@@ -3,6 +3,9 @@
     "logo": {
         "source": "/usr/share/fastfetch/logos/okakos",
         "type": "file-raw",
+        "color": {
+            "1": "cyan"
+        },
         "padding": {
             "top": 1,
             "left": 2,

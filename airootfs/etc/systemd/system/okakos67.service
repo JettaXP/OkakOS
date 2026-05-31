@@ -1,13 +1,12 @@
 [Unit]
-Description=OkakOS 67 Boot Easter Egg and Setup
-DefaultDependencies=no
-After=sysinit.target
-Before=basic.target
+Description=OkakOS 67 Live Session Setup
+After=local-fs.target
+Before=getty@tty1.service
 
 [Service]
 Type=oneshot
-StandardOutput=journal
 ExecStart=/usr/local/bin/okakos-live-setup.sh
+RemainAfterExit=yes
 
 [Install]
-WantedBy=basic.target
+WantedBy=multi-user.target

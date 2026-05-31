@@ -25,30 +25,16 @@ LSBEOF
 
 echo "[OkakOS] os-release configured"
 
-cp -f /run/archiso/airootfs/etc/fastfetch/config.jsonc /etc/fastfetch/config.jsonc 2>/dev/null || mkdir -p /etc/fastfetch && cp /etc/fastfetch/config.jsonc /etc/fastfetch/config.jsonc 2>/dev/null || true
-cp -rf /run/archiso/airootfs/usr/share/fastfetch/logos /usr/share/fastfetch/ 2>/dev/null || true
+chmod +x /usr/local/bin/pocoyo-optimizator 2>/dev/null || true
+chmod +x /usr/local/bin/67wm-troll 2>/dev/null || true
+chmod +x /usr/local/bin/start-67wm 2>/dev/null || true
+chmod +x /usr/local/bin/welcome 2>/dev/null || true
+chmod +x /usr/local/bin/okakos-welcome 2>/dev/null || true
 
-cp -rf /run/archiso/airootfs/etc/fish /etc/ 2>/dev/null || true
-cp -rf /run/archiso/airootfs/etc/skel /etc/ 2>/dev/null || true
-
-cp -rf /run/archiso/airootfs/usr/share/backgrounds /usr/share/ 2>/dev/null || true
-cp -f /run/archiso/airootfs/usr/share/grub/background.jpg /usr/share/grub/background.jpg 2>/dev/null || true
-
-cp -f /run/archiso/airootfs/usr/local/bin/pocoyo-optimizator /usr/local/bin/ 2>/dev/null || true
-cp -f /run/archiso/airootfs/usr/local/bin/67wm-troll /usr/local/bin/ 2>/dev/null || true
-cp -f /run/archiso/airootfs/usr/local/bin/welcome /usr/local/bin/ 2>/dev/null || true
-cp -f /run/archiso/airootfs/usr/local/bin/okakos-welcome /usr/local/bin/ 2>/dev/null || true
-chmod +x /usr/local/bin/pocoyo-optimizator /usr/local/bin/67wm-troll /usr/local/bin/welcome /usr/local/bin/okakos-welcome 2>/dev/null || true
-
-cp -rf /run/archiso/airootfs/usr/share/wayland-sessions /usr/share/ 2>/dev/null || true
-cp -rf /run/archiso/airootfs/usr/share/applications /usr/share/ 2>/dev/null || true
-
-cp -f /run/archiso/airootfs/etc/issue /etc/issue 2>/dev/null || true
-cp -f /run/archiso/airootfs/etc/motd /etc/motd 2>/dev/null || true
-
-echo "[OkakOS] Custom files copied"
+echo "[OkakOS] Scripts made executable"
 
 if [ -f /etc/default/grub ]; then
+    sed -i 's/^GRUB_DEFAULT=.*/GRUB_DEFAULT=0/' /etc/default/grub
     sed -i 's/^GRUB_DISTRIBUTOR=.*/GRUB_DISTRIBUTOR="OkakOS 67"/' /etc/default/grub
 
     if ! grep -q "GRUB_BACKGROUND" /etc/default/grub; then
@@ -89,7 +75,7 @@ fi
 
 echo "[OkakOS] yay installation attempted"
 
-if [ ! -f /etc/hostname ] || [ -z "$(cat /etc/hostname 2>/dev/null)" ]; then
+if [ ! -f /etc/hostname ] || [ "$(cat /etc/hostname 2>/dev/null)" = "okakiso" ]; then
     echo "OkakOS" > /etc/hostname
 fi
 
@@ -97,7 +83,14 @@ echo "[OkakOS] Hostname configured"
 
 rm -f /etc/sddm.conf.d/autologin.conf 2>/dev/null || true
 rm -f /etc/systemd/system/okakos67.service 2>/dev/null || true
+rm -f /etc/systemd/system/multi-user.target.wants/okakos67.service 2>/dev/null || true
+rm -f /etc/systemd/system/getty@tty1.service.d/autologin.conf 2>/dev/null || true
 rm -rf /etc/calamares 2>/dev/null || true
+rm -f /root/.config/fish/conf.d/plasma-autostart.fish 2>/dev/null || true
+
+if [ -n "$NEW_USER" ]; then
+    rm -f /home/$NEW_USER/.config/fish/config.fish 2>/dev/null || true
+fi
 
 echo "[OkakOS] Live-ISO artifacts cleaned"
 

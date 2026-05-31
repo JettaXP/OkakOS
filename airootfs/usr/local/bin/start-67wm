@@ -1,0 +1,2 @@
+#!/bin/bash
+exec /usr/local/bin/67wm-troll
