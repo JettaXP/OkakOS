@@ -21,3 +21,8 @@ images:
     productWelcome:      "languages.png"
 
 slideshow:               "show.qml"
+
+style:
+   SidebarBackground:    "#2c3133"
+   SidebarText:          "#FFFFFF"
+   SidebarTextSelect:    "#4d7079"
