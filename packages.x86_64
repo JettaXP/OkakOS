@@ -21,3 +21,5 @@ firefox
 python-pyqt5
 polkit
 reflector
+python-simple-term-menu
+python-pydantic

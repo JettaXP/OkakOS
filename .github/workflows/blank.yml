@@ -64,6 +64,7 @@ jobs:
 
       - name: Build OkakInstall
         run: |
+          pacman -Sy
           git clone https://github.com/archlinux/archinstall.git /tmp/okakinstall-src
           cd /tmp/okakinstall-src
           git checkout v2.8.0
