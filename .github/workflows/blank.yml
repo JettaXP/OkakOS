@@ -19,7 +19,7 @@ jobs:
       - name: Install base dependencies
         run: |
           pacman -Syu --noconfirm
-          pacman -S --noconfirm archiso base-devel git sudo squashfs-tools python-build python-installer python-wheel python-setuptools imagemagick
+          pacman -S --noconfirm archiso base-devel git sudo squashfs-tools python-build python-installer python-wheel python-setuptools imagemagick dos2unix
 
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -29,11 +29,18 @@ jobs:
           useradd -m -G wheel builder
           echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
+      - name: Build yay-bin from AUR
+        run: |
+          su - builder -c "git clone https://aur.archlinux.org/yay-bin.git /tmp/yay-bin"
+          su - builder -c "cd /tmp/yay-bin && makepkg -s --noconfirm"
+          mkdir -p /tmp/custom_repo
+          cp /tmp/yay-bin/*.pkg.tar.zst /tmp/custom_repo/
+          repo-add /tmp/custom_repo/custom.db.tar.gz /tmp/custom_repo/*.pkg.tar.zst
+
       - name: Build Calamares from AUR
         run: |
           su - builder -c "git clone https://aur.archlinux.org/calamares.git /tmp/calamares"
           su - builder -c "cd /tmp/calamares && makepkg -s --noconfirm"
-          mkdir -p /tmp/custom_repo
           cp /tmp/calamares/*.pkg.tar.zst /tmp/custom_repo/
           repo-add /tmp/custom_repo/custom.db.tar.gz /tmp/custom_repo/*.pkg.tar.zst
 
@@ -68,7 +75,7 @@ jobs:
               replace_from = 'def pacstrap(self, *packages: str, **kwargs: Any) -> None:'
               replace_to = """def pacstrap(self, *packages: str, **kwargs: Any) -> None:
                   packages = list(packages)
-                  okak_pkgs = ["plasma-desktop", "konsole", "dolphin", "foot", "sddm", "xorg-server", "xorg-xhost", "networkmanager", "nano", "git", "fish", "fastfetch", "xdg-user-dirs", "base-devel", "sudo"]
+                  okak_pkgs = ["plasma-desktop", "konsole", "dolphin", "foot", "sddm", "xorg-server", "xorg-xhost", "networkmanager", "nano", "git", "fish", "fastfetch", "xdg-user-dirs", "base-devel", "sudo", "polkit", "reflector", "firefox"]
                   for p in okak_pkgs:
                       if p not in packages:
                           packages.append(p)
@@ -86,6 +93,18 @@ jobs:
               replace_from_main = 'installation.genfstab()'
               replace_to_main = """import subprocess, os
           TABTABif os.path.exists("/mnt/etc"):
+          TABTABTABsubprocess.run("mkdir -p /mnt/etc/skel /mnt/usr/share /mnt/usr/local/bin /mnt/etc/fastfetch /mnt/etc/fish /mnt/etc/polkit-1/rules.d /mnt/etc/default", shell=True)
+          TABTABTABsubprocess.run("cp -a /etc/skel/. /mnt/etc/skel/ 2>/dev/null", shell=True)
+          TABTABTABsubprocess.run("cp -a /etc/fish/. /mnt/etc/fish/ 2>/dev/null", shell=True)
+          TABTABTABsubprocess.run("cp -a /etc/fastfetch/. /mnt/etc/fastfetch/ 2>/dev/null", shell=True)
+          TABTABTABsubprocess.run("cp -a /etc/default/grub /mnt/etc/default/grub 2>/dev/null", shell=True)
+          TABTABTABsubprocess.run("cp -a /usr/share/backgrounds /mnt/usr/share/ 2>/dev/null", shell=True)
+          TABTABTABsubprocess.run("cp -a /usr/share/grub /mnt/usr/share/ 2>/dev/null", shell=True)
+          TABTABTABsubprocess.run("cp -a /usr/share/fastfetch /mnt/usr/share/ 2>/dev/null", shell=True)
+          TABTABTABsubprocess.run("cp -a /usr/share/applications /mnt/usr/share/ 2>/dev/null", shell=True)
+          TABTABTABsubprocess.run("cp -a /usr/local/bin/* /mnt/usr/local/bin/ 2>/dev/null", shell=True)
+          TABTABTABsubprocess.run("cp -a /etc/polkit-1/rules.d/* /mnt/etc/polkit-1/rules.d/ 2>/dev/null", shell=True)
+          TABTABTABsubprocess.run("chmod +x /mnt/usr/local/bin/* 2>/dev/null", shell=True)
           TABTABTABsubprocess.run("cp /usr/local/bin/okakos-post-install.sh /mnt/root/ && arch-chroot /mnt bash /root/okakos-post-install.sh && rm -f /mnt/root/okakos-post-install.sh", shell=True)
           TABTABinstallation.genfstab()""".replace("TAB", chr(9))
               content = content.replace(replace_from_main, replace_to_main)
@@ -181,17 +200,27 @@ jobs:
 
           cp -r airootfs/* ./okakos-profile/airootfs/
           echo 'okakinstall' >> ./okakos-profile/packages.x86_64
+          echo 'yay-bin' >> ./okakos-profile/packages.x86_64
           cat packages.x86_64 >> ./okakos-profile/packages.x86_64
 
+          find ./okakos-profile/airootfs/usr/local/bin/ -type f -exec dos2unix {} \;
+          find ./okakos-profile/airootfs/etc/ -name '*.fish' -exec dos2unix {} \;
+          find ./okakos-profile/airootfs/etc/ -name '*.sh' -exec dos2unix {} \;
+          find ./okakos-profile/airootfs/etc/ -name '*.conf' -exec dos2unix {} \;
+          find ./okakos-profile/airootfs/etc/ -name '*.service' -exec dos2unix {} \;
+          find ./okakos-profile/airootfs/etc/ -name '*.desktop' -exec dos2unix {} \;
+          find ./okakos-profile/airootfs/usr/share/applications/ -name '*.desktop' -exec dos2unix {} \;
+          find ./okakos-profile/airootfs/root/ -name '*.fish' -exec dos2unix {} \;
 
-          mkdir -p ./okakos-profile/airootfs/etc/systemd/system/basic.target.wants/
-          ln -sf /etc/systemd/system/okakos67.service ./okakos-profile/airootfs/etc/systemd/system/basic.target.wants/okakos67.service
+          mkdir -p ./okakos-profile/airootfs/etc/systemd/system/multi-user.target.wants/
+          ln -sf /etc/systemd/system/okakos67.service ./okakos-profile/airootfs/etc/systemd/system/multi-user.target.wants/okakos67.service
+          ln -sf /usr/lib/systemd/system/NetworkManager.service ./okakos-profile/airootfs/etc/systemd/system/multi-user.target.wants/NetworkManager.service
 
           sed -i 's|/usr/bin/zsh|/usr/bin/fish|g' ./okakos-profile/airootfs/etc/passwd 2>/dev/null || true
           sed -i 's|/usr/bin/zsh|/usr/bin/fish|g' ./okakos-profile/airootfs/etc/shadow 2>/dev/null || true
-          mkdir -p ./okakos-profile/airootfs/etc/systemd/system/multi-user.target.wants/
-          ln -sf /usr/lib/systemd/system/NetworkManager.service ./okakos-profile/airootfs/etc/systemd/system/multi-user.target.wants/NetworkManager.service
           chmod +x ./okakos-profile/airootfs/usr/local/bin/*
+
+          rm -f ./okakos-profile/airootfs/usr/share/applications/calamares.desktop 2>/dev/null || true
 
           if [ -f ./okakos-profile/profiledef.sh ]; then
             sed -i 's/iso_name="archlinux"/iso_name="okakos"/g' ./okakos-profile/profiledef.sh
@@ -199,6 +228,18 @@ jobs:
             sed -i "s/iso_publisher=\"Arch Linux/iso_publisher=\"OkakOS/g" ./okakos-profile/profiledef.sh
             sed -i "s/iso_application=\"Arch Linux/iso_application=\"OkakOS/g" ./okakos-profile/profiledef.sh
             sed -i "s/^airootfs_image_tool_options.*/airootfs_image_tool_options=('-comp' 'xz' '-b' '1M')/g" ./okakos-profile/profiledef.sh
+
+            echo "" >> ./okakos-profile/profiledef.sh
+            echo "file_permissions+=(" >> ./okakos-profile/profiledef.sh
+            echo "  ['/usr/local/bin/okakos-welcome']='0:0:755'" >> ./okakos-profile/profiledef.sh
+            echo "  ['/usr/local/bin/okakos-post-install.sh']='0:0:755'" >> ./okakos-profile/profiledef.sh
+            echo "  ['/usr/local/bin/okakos-live-setup.sh']='0:0:755'" >> ./okakos-profile/profiledef.sh
+            echo "  ['/usr/local/bin/pocoyo-optimizator']='0:0:755'" >> ./okakos-profile/profiledef.sh
+            echo "  ['/usr/local/bin/welcome']='0:0:755'" >> ./okakos-profile/profiledef.sh
+            echo "  ['/usr/local/bin/67wm-troll']='0:0:755'" >> ./okakos-profile/profiledef.sh
+            echo "  ['/usr/local/bin/start-67wm']='0:0:755'" >> ./okakos-profile/profiledef.sh
+            echo "  ['/usr/local/bin/okakinstall']='0:0:755'" >> ./okakos-profile/profiledef.sh
+            echo ")" >> ./okakos-profile/profiledef.sh
           fi
 
       - name: Build ISO
