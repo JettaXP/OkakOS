@@ -1,60 +1,8 @@
-- name: "Рабочий стол"
-  description: "Выбор окружения рабочего стола"
-  critical: false
-  immutable: false
-  subgroups:
-    - name: "KDE Plasma (по умолчанию)"
-      description: "Полноценный рабочий стол KDE Plasma"
-      selected: true
-      packages:
-        - plasma-desktop
-        - sddm
-        - konsole
-        - dolphin
-        - kate
-        - spectacle
-        - ark
-        - gwenview
-        - okular
-        - plasma-nm
-        - plasma-pa
-        - kde-gtk-config
-        - breeze-gtk
-        - powerdevil
-        - bluedevil
-    - name: "XFCE"
-      description: "Лёгкий и быстрый рабочий стол XFCE"
-      selected: false
-      packages:
-        - xfce4
-        - xfce4-goodies
-        - lightdm
-        - lightdm-gtk-greeter
-    - name: "GNOME"
-      description: "Современный рабочий стол GNOME"
-      selected: false
-      packages:
-        - gnome
-        - gnome-tweaks
-        - gdm
-    - name: "i3 (тайловый)"
-      description: "Минималистичный тайловый оконный менеджер i3"
-      selected: false
-      packages:
-        - i3-wm
-        - i3status
-        - i3lock
-        - dmenu
-        - rofi
-        - picom
-        - feh
-        - dunst
-
 - name: "Браузеры"
   description: "Веб-браузеры"
   critical: false
   subgroups:
-    - name: "Firefox (по умолчанию)"
+    - name: "Firefox"
       description: "Свободный браузер от Mozilla"
       selected: true
       packages:
@@ -90,7 +38,7 @@
   critical: false
   subgroups:
     - name: "Visual Studio Code"
-      description: "Редактор кода от Microsoft (open-source версия)"
+      description: "Редактор кода от Microsoft"
       selected: false
       packages:
         - code

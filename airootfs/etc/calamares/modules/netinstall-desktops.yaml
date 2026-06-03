@@ -1,0 +1,88 @@
+- name: "Окружение рабочего стола"
+  description: "Выберите одно или несколько окружений"
+  critical: false
+  immutable: false
+  subgroups:
+    - name: "KDE Plasma"
+      description: "Полноценный современный рабочий стол с глубокой кастомизацией"
+      selected: true
+      packages:
+        - plasma-desktop
+        - sddm
+        - konsole
+        - dolphin
+        - kate
+        - spectacle
+        - ark
+        - gwenview
+        - okular
+        - plasma-nm
+        - plasma-pa
+        - kde-gtk-config
+        - breeze-gtk
+        - powerdevil
+        - bluedevil
+    - name: "GNOME"
+      description: "Современный минималистичный рабочий стол"
+      selected: false
+      packages:
+        - gnome
+        - gnome-tweaks
+        - gdm
+    - name: "XFCE"
+      description: "Лёгкий и быстрый классический рабочий стол"
+      selected: false
+      packages:
+        - xfce4
+        - xfce4-goodies
+        - lightdm
+        - lightdm-gtk-greeter
+    - name: "i3"
+      description: "Тайловый оконный менеджер для продвинутых пользователей"
+      selected: false
+      packages:
+        - i3-wm
+        - i3status
+        - i3lock
+        - dmenu
+        - rofi
+        - picom
+        - feh
+        - dunst
+    - name: "Sway"
+      description: "Тайловый композитор для Wayland, аналог i3"
+      selected: false
+      packages:
+        - sway
+        - swaylock
+        - swayidle
+        - swaybg
+        - waybar
+        - wofi
+        - mako
+        - grim
+        - slurp
+        - foot
+    - name: "Hyprland"
+      description: "Динамический тайловый композитор для Wayland с анимациями"
+      selected: false
+      packages:
+        - hyprland
+        - hyprpaper
+        - waybar
+        - wofi
+        - mako
+        - grim
+        - slurp
+        - kitty
+        - xdg-desktop-portal-hyprland
+    - name: "Niri"
+      description: "Скроллящийся тайловый композитор для Wayland"
+      selected: false
+      packages:
+        - niri
+        - waybar
+        - wofi
+        - mako
+        - fuzzel
+        - swaylock
