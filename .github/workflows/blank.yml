@@ -48,6 +48,13 @@ jobs:
           
           pacman -Sy --noconfirm yay-bin
 
+      - name: Build Calamares from AUR
+        run: |
+          su - builder -c "git clone https://aur.archlinux.org/calamares.git /tmp/calamares"
+          su - builder -c "cd /tmp/calamares && makepkg -s --noconfirm"
+          cp /tmp/calamares/*.pkg.tar.zst /tmp/custom_repo/
+          repo-add /tmp/custom_repo/custom.db.tar.gz /tmp/custom_repo/*.pkg.tar.zst
+
       - name: Build OkakInstall
         run: |
           git clone https://github.com/archlinux/archinstall.git /tmp/okakinstall-src
