@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Pocoyo Optimizator
 Comment=Очистка кэша и оптимизация от OkakOS
-Exec=foot -e /usr/local/bin/pocoyo-optimizator
+Exec=foot -e bash /usr/local/bin/pocoyo-optimizator
 Icon=utilities-system-monitor
 Terminal=false
 Type=Application

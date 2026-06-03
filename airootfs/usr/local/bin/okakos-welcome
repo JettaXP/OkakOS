@@ -111,7 +111,7 @@ class WelcomeApp(QMainWindow):
             btn_cal = QPushButton("  🖥️  Запустить Calamares (графический установщик)")
             btn_cal.setObjectName("install")
             btn_cal.setCursor(Qt.PointingHandCursor)
-            btn_cal.clicked.connect(lambda: subprocess.Popen(["sudo", "calamares"]))
+            btn_cal.clicked.connect(lambda: subprocess.Popen(["pkexec", "calamares"]))
             layout.addWidget(btn_cal)
 
             btn_tui = QPushButton("  ⌨️  Запустить OkakInstall (терминальный установщик)")

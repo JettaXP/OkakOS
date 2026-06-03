@@ -5,7 +5,7 @@ Before=getty@tty1.service
 
 [Service]
 Type=oneshot
-ExecStart=/usr/local/bin/okakos-live-setup.sh
+ExecStart=/bin/bash /usr/local/bin/okakos-live-setup.sh
 RemainAfterExit=yes
 
 [Install]
