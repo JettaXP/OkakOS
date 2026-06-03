@@ -55,6 +55,13 @@ jobs:
           cp /tmp/calamares/*.pkg.tar.zst /tmp/custom_repo/
           repo-add /tmp/custom_repo/custom.db.tar.gz /tmp/custom_repo/*.pkg.tar.zst
 
+      - name: Build python-simple-term-menu from AUR
+        run: |
+          su - builder -c "git clone https://aur.archlinux.org/python-simple-term-menu.git /tmp/python-simple-term-menu"
+          su - builder -c "cd /tmp/python-simple-term-menu && makepkg -s --noconfirm"
+          cp /tmp/python-simple-term-menu/*.pkg.tar.zst /tmp/custom_repo/
+          repo-add /tmp/custom_repo/custom.db.tar.gz /tmp/custom_repo/*.pkg.tar.zst
+
       - name: Build OkakInstall
         run: |
           git clone https://github.com/archlinux/archinstall.git /tmp/okakinstall-src
