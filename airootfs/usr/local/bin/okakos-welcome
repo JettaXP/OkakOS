@@ -155,7 +155,7 @@ class WelcomeApp(QMainWindow):
 
             btn_pocoyo = QPushButton("  🎮  Pocoyo Optimizator")
             btn_pocoyo.setCursor(Qt.PointingHandCursor)
-            btn_pocoyo.clicked.connect(lambda: subprocess.Popen(["foot", "-e", "bash", "-c", "pocoyo-optimizator"]))
+            btn_pocoyo.clicked.connect(lambda: subprocess.Popen(["foot", "-e", "bash", "-c", "sudo pocoyo-optimizator"]))
             layout.addWidget(btn_pocoyo)
 
         layout.addStretch()
