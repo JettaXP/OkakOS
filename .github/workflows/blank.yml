@@ -54,9 +54,7 @@ jobs:
           cd /tmp/okakinstall-src
           git checkout v2.8.0
 
-          for f in okakos-welcome okakos-live-setup.sh okakos-post-install.sh pocoyo-optimizator welcome 67wm-troll start-67wm; do
-            dos2unix "airootfs/usr/local/bin/$f" 2>/dev/null || true
-          done
+          mv archinstall okakinstall
 
           find . -type f -name '*.py' -exec sed -i 's/archinstall/okakinstall/g' {} +
           find . -type f -name '*.py' -exec sed -i 's/Arch Linux/OkakOS 67/g' {} +
