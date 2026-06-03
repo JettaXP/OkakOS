@@ -147,6 +147,7 @@ jobs:
             'python-linkify-it-py'
             'python-markdown-it-py'
             'python-pydantic'
+            'python-simple-term-menu'
             'python-pyparted'
             'python-textual'
             'systemd'
@@ -208,6 +209,7 @@ jobs:
 
           sed -i 's|/usr/bin/zsh|/usr/bin/fish|g' ./okakos-profile/airootfs/etc/passwd 2>/dev/null || true
           sed -i 's|/usr/bin/zsh|/usr/bin/fish|g' ./okakos-profile/airootfs/etc/shadow 2>/dev/null || true
+          echo "/usr/bin/fish" >> ./okakos-profile/airootfs/etc/shells || true
           chmod +x ./okakos-profile/airootfs/usr/local/bin/*
 
           rm -f ./okakos-profile/airootfs/usr/share/applications/calamares.desktop 2>/dev/null || true

@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=OkakOS Welcome
+Exec=okakos-welcome
+Icon=system-os-installer
+Terminal=false
+Categories=Utility;
+X-GNOME-Autostart-enabled=true
