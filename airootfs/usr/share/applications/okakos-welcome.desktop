@@ -3,6 +3,6 @@ Type=Application
 Name=OkakOS Welcome
 GenericName=Welcome App
 Exec=okakos-welcome
-Icon=system-os-installer
+Icon=/etc/calamares/branding/okakos/logo.png
 Terminal=false
 Categories=System;
