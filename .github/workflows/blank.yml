@@ -16,27 +16,6 @@ jobs:
       options: --privileged
 
     steps:
-      - name: Configure Artix Repositories
-        run: |
-          echo '' >> /etc/pacman.conf
-          echo '[artix]' >> /etc/pacman.conf
-          echo 'Server = https://mirrors.artixlinux.org/artix/os/$arch' >> /etc/pacman.conf
-          echo 'SigLevel = Optional TrustAll' >> /etc/pacman.conf
-          echo '' >> /etc/pacman.conf
-          echo '[system]' >> /etc/pacman.conf
-          echo 'Server = https://mirrors.artixlinux.org/system/os/$arch' >> /etc/pacman.conf
-          echo 'SigLevel = Optional TrustAll' >> /etc/pacman.conf
-          echo '' >> /etc/pacman.conf
-          echo '[world]' >> /etc/pacman.conf
-          echo 'Server = https://mirrors.artixlinux.org/world/os/$arch' >> /etc/pacman.conf
-          echo 'SigLevel = Optional TrustAll' >> /etc/pacman.conf
-          echo '' >> /etc/pacman.conf
-          echo '[galaxy]' >> /etc/pacman.conf
-          echo 'Server = https://mirrors.artixlinux.org/galaxy/os/$arch' >> /etc/pacman.conf
-          echo 'SigLevel = Optional TrustAll' >> /etc/pacman.conf
-          pacman -Sy --noconfirm artix-keyring artix-mirrorlist
-          pacman-key --populate artix
-
       - name: Install base dependencies
         run: |
           pacman -Syu --noconfirm
@@ -262,22 +241,6 @@ jobs:
           cp airootfs/usr/share/grub/background.jpg ./okakos-profile/syslinux/splash.jpg 2>/dev/null || true
           magick ./okakos-profile/syslinux/splash.jpg -resize 640x480\! ./okakos-profile/syslinux/splash.png 2>/dev/null || true
 
-          echo '' >> ./okakos-profile/pacman.conf
-          echo '[artix]' >> ./okakos-profile/pacman.conf
-          echo 'Server = https://mirrors.artixlinux.org/artix/os/$arch' >> ./okakos-profile/pacman.conf
-          echo 'SigLevel = Optional TrustAll' >> ./okakos-profile/pacman.conf
-          echo '' >> ./okakos-profile/pacman.conf
-          echo '[system]' >> ./okakos-profile/pacman.conf
-          echo 'Server = https://mirrors.artixlinux.org/system/os/$arch' >> ./okakos-profile/pacman.conf
-          echo 'SigLevel = Optional TrustAll' >> ./okakos-profile/pacman.conf
-          echo '' >> ./okakos-profile/pacman.conf
-          echo '[world]' >> ./okakos-profile/pacman.conf
-          echo 'Server = https://mirrors.artixlinux.org/world/os/$arch' >> ./okakos-profile/pacman.conf
-          echo 'SigLevel = Optional TrustAll' >> ./okakos-profile/pacman.conf
-          echo '' >> ./okakos-profile/pacman.conf
-          echo '[galaxy]' >> ./okakos-profile/pacman.conf
-          echo 'Server = https://mirrors.artixlinux.org/galaxy/os/$arch' >> ./okakos-profile/pacman.conf
-          echo 'SigLevel = Optional TrustAll' >> ./okakos-profile/pacman.conf
           echo '' >> ./okakos-profile/pacman.conf
           echo '[custom]' >> ./okakos-profile/pacman.conf
           echo 'SigLevel = Optional TrustAll' >> ./okakos-profile/pacman.conf

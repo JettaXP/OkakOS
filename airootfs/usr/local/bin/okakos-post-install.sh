@@ -54,7 +54,7 @@ if [ -n "$NEW_USER" ] && command -v fish &> /dev/null; then
     echo "[OkakOS] Fish shell set for $NEW_USER"
 fi
 
-pacman-key --populate artix 2>/dev/null || true
+[ -f /usr/share/pacman/keyrings/artix.gpg ] && pacman-key --populate artix 2>/dev/null || true
 
 rc-update add sddm default 2>/dev/null || true
 rc-update add NetworkManager default 2>/dev/null || true
