@@ -69,50 +69,51 @@ jobs:
           find . -type f \( -name '*.py' -o -name '*.json' \) -exec sed -i 's/xf86-video-vmware/xorg-xinit/g' {} +
 
           cat > patch_okakos.py << 'PYEOF'
-import os, re
-
-guided_path = 'okakinstall/scripts/guided.py'
-if os.path.exists(guided_path):
-    with open(guided_path, 'r') as f:
-        content = f.read()
-
-    old = 'installation.genfstab()'
-    new = """import subprocess, os as _os
-\t\tif _os.path.exists(str(installation.target) + "/etc"):
-\t\t\t_t = str(installation.target)
-\t\t\tsubprocess.run(f"cp -a /tmp/custom_repo {_t}/var/tmp/ 2>/dev/null", shell=True)
-\t\t\tsubprocess.run(f'echo "" >> {_t}/etc/pacman.conf; echo "[custom]" >> {_t}/etc/pacman.conf; echo "SigLevel = Optional TrustAll" >> {_t}/etc/pacman.conf; echo "Server = file:///var/tmp/custom_repo" >> {_t}/etc/pacman.conf', shell=True)
-\t\t\tsubprocess.run(f"arch-chroot {_t} pacman -Sy --noconfirm yay-bin nano git fish fastfetch xdg-user-dirs base-devel sudo polkit reflector firefox", shell=True)
-\t\t\tsubprocess.run(f"mkdir -p {_t}/etc/skel {_t}/usr/share/fastfetch/logos {_t}/usr/local/bin {_t}/etc/fastfetch {_t}/etc/fish {_t}/etc/polkit-1/rules.d {_t}/etc/default", shell=True)
-\t\t\tsubprocess.run(f"cp -a /etc/skel/. {_t}/etc/skel/ 2>/dev/null", shell=True)
-\t\t\tsubprocess.run(f"cp -a /etc/fish/. {_t}/etc/fish/ 2>/dev/null", shell=True)
-\t\t\tsubprocess.run(f"cp -a /etc/fastfetch/. {_t}/etc/fastfetch/ 2>/dev/null", shell=True)
-\t\t\tsubprocess.run(f"cp -a /etc/default/grub {_t}/etc/default/grub 2>/dev/null", shell=True)
-\t\t\tsubprocess.run(f"cp -a /usr/share/backgrounds {_t}/usr/share/ 2>/dev/null", shell=True)
-\t\t\tsubprocess.run(f"cp -a /usr/share/gnome-background-properties {_t}/usr/share/ 2>/dev/null", shell=True)
-\t\t\tsubprocess.run(f"cp -a /usr/share/grub {_t}/usr/share/ 2>/dev/null", shell=True)
-\t\t\tsubprocess.run(f"cp -a /usr/share/fastfetch/logos/okakos {_t}/usr/share/fastfetch/logos/okakos 2>/dev/null", shell=True)
-\t\t\tsubprocess.run(f"cp -a /usr/share/applications {_t}/usr/share/ 2>/dev/null", shell=True)
-\t\t\tsubprocess.run(f"rm -f {_t}/usr/share/applications/okakinstall.desktop {_t}/usr/share/applications/calamares.desktop 2>/dev/null", shell=True)
-\t\t\tsubprocess.run(f"cp -a /usr/local/bin/* {_t}/usr/local/bin/ 2>/dev/null", shell=True)
-\t\t\tsubprocess.run(f"cp -a /etc/polkit-1/rules.d/* {_t}/etc/polkit-1/rules.d/ 2>/dev/null", shell=True)
-\t\t\tsubprocess.run(f"chmod +x {_t}/usr/local/bin/* 2>/dev/null", shell=True)
-\t\t\tsubprocess.run(f"cp /usr/local/bin/okakos-post-install.sh {_t}/root/ && arch-chroot {_t} bash /root/okakos-post-install.sh && rm -f {_t}/root/okakos-post-install.sh", shell=True)
-\t\tinstallation.genfstab()"""
-
-    content = content.replace(old, new)
-    with open(guided_path, 'w') as f:
-        f.write(content)
-    print("[OK] Patched guided.py")
-else:
-    print("[WARN] guided.py not found at", guided_path)
-
-version_path = 'okakinstall/lib/version.py'
-if os.path.exists(version_path):
-    with open(version_path, 'w') as f:
-        f.write("def get_version() -> str:\n\treturn 'OkakOS 67'\n")
-    print("[OK] Patched version.py")
-PYEOF
+          import os, re
+          
+          guided_path = 'okakinstall/scripts/guided.py'
+          if os.path.exists(guided_path):
+              with open(guided_path, 'r') as f:
+                  content = f.read()
+          
+              old = 'installation.genfstab()'
+              new = """import subprocess, os as _os
+          \t\tif _os.path.exists(str(installation.target) + "/etc"):
+          \t\t\t_t = str(installation.target)
+          \t\t\tsubprocess.run(f"cp -a /tmp/custom_repo {_t}/var/tmp/ 2>/dev/null", shell=True)
+          \t\t\tsubprocess.run(f'echo "" >> {_t}/etc/pacman.conf; echo "[custom]" >> {_t}/etc/pacman.conf; echo "SigLevel = Optional TrustAll" >> {_t}/etc/pacman.conf; echo "Server = file:///var/tmp/custom_repo" >> {_t}/etc/pacman.conf', shell=True)
+          \t\t\tsubprocess.run(f"arch-chroot {_t} pacman -Sy --noconfirm yay-bin nano git fish fastfetch xdg-user-dirs base-devel sudo polkit reflector firefox", shell=True)
+          \t\t\tsubprocess.run(f"mkdir -p {_t}/etc/skel {_t}/usr/share/fastfetch/logos {_t}/usr/local/bin {_t}/etc/fastfetch {_t}/etc/fish {_t}/etc/polkit-1/rules.d {_t}/etc/default", shell=True)
+          \t\t\tsubprocess.run(f"cp -a /etc/skel/. {_t}/etc/skel/ 2>/dev/null", shell=True)
+          \t\t\tsubprocess.run(f"cp -a /etc/fish/. {_t}/etc/fish/ 2>/dev/null", shell=True)
+          \t\t\tsubprocess.run(f"cp -a /etc/fastfetch/. {_t}/etc/fastfetch/ 2>/dev/null", shell=True)
+          \t\t\tsubprocess.run(f"cp -a /etc/default/grub {_t}/etc/default/grub 2>/dev/null", shell=True)
+          \t\t\tsubprocess.run(f"cp -a /usr/share/backgrounds {_t}/usr/share/ 2>/dev/null", shell=True)
+          \t\t\tsubprocess.run(f"cp -a /usr/share/gnome-background-properties {_t}/usr/share/ 2>/dev/null", shell=True)
+          \t\t\tsubprocess.run(f"cp -a /usr/share/grub {_t}/usr/share/ 2>/dev/null", shell=True)
+          \t\t\tsubprocess.run(f"cp -a /usr/share/fastfetch/logos/okakos {_t}/usr/share/fastfetch/logos/okakos 2>/dev/null", shell=True)
+          \t\t\tsubprocess.run(f"cp -a /usr/share/applications {_t}/usr/share/ 2>/dev/null", shell=True)
+          \t\t\tsubprocess.run(f"rm -f {_t}/usr/share/applications/okakinstall.desktop {_t}/usr/share/applications/calamares.desktop 2>/dev/null", shell=True)
+          \t\t\tsubprocess.run(f"cp -a /usr/local/bin/* {_t}/usr/local/bin/ 2>/dev/null", shell=True)
+          \t\t\tsubprocess.run(f"cp -a /etc/polkit-1/rules.d/* {_t}/etc/polkit-1/rules.d/ 2>/dev/null", shell=True)
+          \t\t\tsubprocess.run(f"chmod +x {_t}/usr/local/bin/* 2>/dev/null", shell=True)
+          \t\t\tsubprocess.run(f"cp /usr/local/bin/okakos-post-install.sh {_t}/root/ && arch-chroot {_t} bash /root/okakos-post-install.sh && rm -f {_t}/root/okakos-post-install.sh", shell=True)
+          \t\tinstallation.genfstab()"""
+          
+              content = content.replace(old, new)
+              with open(guided_path, 'w') as f:
+                  f.write(content)
+              print("[OK] Patched guided.py")
+          else:
+              print("[WARN] guided.py not found at", guided_path)
+          
+          version_path = 'okakinstall/lib/version.py'
+          if os.path.exists(version_path):
+              with open(version_path, 'w') as f:
+                  f.write("def get_version() -> str:\n\treturn 'OkakOS 67'\n")
+              print("[OK] Patched version.py")
+          PYEOF
+          sed -i 's/^          //' patch_okakos.py
           python patch_okakos.py
 
           sed -i 's/archinstall/okakinstall/g' pyproject.toml
