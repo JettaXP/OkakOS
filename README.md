@@ -1,3 +1,5 @@
+[🇷🇺 Русский](README.md) | [🇬🇧 English](README_en.md)
+
 # OkakOS 67 🚀
 
 <div align="center">
