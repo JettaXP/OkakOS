@@ -62,6 +62,7 @@ jobs:
           cd /tmp/okakinstall-src
 
           mv archinstall okakinstall
+          rm -rf examples okakinstall/examples
 
           find . -type f -name '*.py' -exec sed -i 's/archinstall/okakinstall/g' {} +
           find . -type f -name '*.py' -exec sed -i 's/Arch Linux/OkakOS 67/g' {} +
