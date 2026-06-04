@@ -12,12 +12,16 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: archlinux:latest
+      image: artixlinux/artixlinux:base-openrc
       options: --privileged
 
     steps:
       - name: Install base dependencies
         run: |
+          pacman-key --init
+          pacman-key --populate artix
+          pacman -S --noconfirm artix-archlinux-support
+          pacman-key --populate archlinux
           pacman -Syu --noconfirm
           pacman -S --noconfirm archiso base-devel git sudo squashfs-tools python-build python-installer python-wheel python-setuptools imagemagick dos2unix
 
