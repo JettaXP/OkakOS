@@ -254,19 +254,19 @@ jobs:
 
           echo '' >> ./okakos-profile/pacman.conf
           echo '[artix]' >> ./okakos-profile/pacman.conf
-          echo 'Include = /etc/pacman.d/mirrorlist' >> ./okakos-profile/pacman.conf
+          echo 'Server = https://mirrors.artixlinux.org/$repo/os/$arch' >> ./okakos-profile/pacman.conf
           echo 'SigLevel = Optional TrustAll' >> ./okakos-profile/pacman.conf
           echo '' >> ./okakos-profile/pacman.conf
           echo '[system]' >> ./okakos-profile/pacman.conf
-          echo 'Include = /etc/pacman.d/mirrorlist' >> ./okakos-profile/pacman.conf
+          echo 'Server = https://mirrors.artixlinux.org/$repo/os/$arch' >> ./okakos-profile/pacman.conf
           echo 'SigLevel = Optional TrustAll' >> ./okakos-profile/pacman.conf
           echo '' >> ./okakos-profile/pacman.conf
           echo '[world]' >> ./okakos-profile/pacman.conf
-          echo 'Include = /etc/pacman.d/mirrorlist' >> ./okakos-profile/pacman.conf
+          echo 'Server = https://mirrors.artixlinux.org/$repo/os/$arch' >> ./okakos-profile/pacman.conf
           echo 'SigLevel = Optional TrustAll' >> ./okakos-profile/pacman.conf
           echo '' >> ./okakos-profile/pacman.conf
           echo '[galaxy]' >> ./okakos-profile/pacman.conf
-          echo 'Include = /etc/pacman.d/mirrorlist' >> ./okakos-profile/pacman.conf
+          echo 'Server = https://mirrors.artixlinux.org/$repo/os/$arch' >> ./okakos-profile/pacman.conf
           echo 'SigLevel = Optional TrustAll' >> ./okakos-profile/pacman.conf
           echo '' >> ./okakos-profile/pacman.conf
           echo '[custom]' >> ./okakos-profile/pacman.conf
