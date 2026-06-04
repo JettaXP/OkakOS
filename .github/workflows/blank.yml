@@ -51,16 +51,8 @@ jobs:
       - name: Build Calamares from AUR
         run: |
           su - builder -c "git clone https://aur.archlinux.org/calamares.git /tmp/calamares"
+          su - builder -c "sed -i '/cmake --install build/a \  rm -f \"\$pkgdir/usr/share/calamares/settings.conf\"\n  rm -f \"\$pkgdir/usr/lib/calamares/modules/shellprocess/shellprocess.conf\"' /tmp/calamares/PKGBUILD"
           su - builder -c "cd /tmp/calamares && makepkg -s --noconfirm"
-
-          mkdir -p /tmp/cala-repack
-          cd /tmp/cala-repack
-          CALA_PKG=$(find /tmp/calamares -maxdepth 1 -name 'calamares-[0-9]*.pkg.tar.zst' | head -1)
-          tar xf "$CALA_PKG"
-          rm -f usr/share/calamares/settings.conf
-          rm -f usr/lib/calamares/modules/shellprocess/shellprocess.conf
-          tar cf "$CALA_PKG" --zstd .
-          cd /
 
           cp /tmp/calamares/*.pkg.tar.zst /tmp/custom_repo/
           repo-add /tmp/custom_repo/custom.db.tar.gz /tmp/custom_repo/*.pkg.tar.zst
