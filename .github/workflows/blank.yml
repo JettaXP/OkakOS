@@ -25,6 +25,9 @@ jobs:
           pacman -Sy --noconfirm
           pacman -S --noconfirm artix-archlinux-support
           pacman-key --populate archlinux
+          echo '' >> /etc/pacman.conf
+          echo '[extra]' >> /etc/pacman.conf
+          echo 'Include = /etc/pacman.d/mirrorlist-arch' >> /etc/pacman.conf
           pacman -Syu --noconfirm
           pacman -S --noconfirm archiso base-devel git sudo squashfs-tools python-build python-installer python-wheel python-setuptools imagemagick dos2unix
 
