@@ -22,6 +22,7 @@ jobs:
           echo 'nameserver 1.1.1.1' >> /etc/resolv.conf
           pacman-key --init
           pacman-key --populate artix
+          pacman -Sy --noconfirm
           pacman -S --noconfirm artix-archlinux-support
           pacman-key --populate archlinux
           pacman -Syu --noconfirm
