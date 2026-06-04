@@ -105,7 +105,8 @@ okakos/
 │   │   ├── motd                 # Приветствие
 │   │   ├── issue                # Баннер входа
 │   │   ├── sddm.conf.d/        # Автологин SDDM
-│   │   ├── systemd/system/      # Сервисы
+│   │   ├── init.d/              # OpenRC сервисы
+│   │   ├── conf.d/              # Конфиги OpenRC сервисов
 │   │   └── profile.d/           # Профильные скрипты
 │   └── usr/
 │       ├── local/bin/           # Скрипты OkakOS

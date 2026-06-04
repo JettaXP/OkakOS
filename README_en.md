@@ -92,7 +92,8 @@ okakos/
 │   │   ├── motd                 # Greeting
 │   │   ├── issue                # Login banner
 │   │   ├── sddm.conf.d/        # SDDM auto-login
-│   │   ├── systemd/system/      # Services
+│   │   ├── init.d/              # OpenRC services
+│   │   ├── conf.d/              # OpenRC service configs
 │   │   └── profile.d/           # Profile scripts
 │   └── usr/
 │       ├── local/bin/           # OkakOS scripts

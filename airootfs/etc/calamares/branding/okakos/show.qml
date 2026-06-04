@@ -41,7 +41,7 @@ Presentation {
     Slide {
         Text {
             anchors.centerIn: parent
-            text: "Сикс Севен одобряет этот дистрибутив.\nВместо systemd мы установили... а нет, всё-таки systemd."
+            text: "Сикс Севен одобряет этот дистрибутив.\nВместо systemd мы установили OpenRC. Да, по-настоящему."
             font.pixelSize: 24
             horizontalAlignment: Text.AlignHCenter
             color: "cyan"
