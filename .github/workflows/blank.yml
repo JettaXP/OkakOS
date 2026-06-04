@@ -30,6 +30,10 @@ jobs:
           echo 'Include = /etc/pacman.d/mirrorlist-arch' >> /etc/pacman.conf
           pacman -Syu --noconfirm
           pacman -S --noconfirm archiso base-devel git sudo squashfs-tools python-build python-installer python-wheel python-setuptools imagemagick dos2unix
+          mkdir -p /tmp/custom_repo
+          chmod 777 /tmp/custom_repo
+          pacman -Sw --noconfirm --cachedir /tmp/custom_repo artix-keyring artix-mirrorlist 2>/dev/null || echo "[WARN] artix-keyring/artix-mirrorlist pre-download failed, will try CDN at build time"
+          chmod 644 /tmp/custom_repo/*.pkg.tar.zst 2>/dev/null || true
 
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -253,19 +257,24 @@ jobs:
           magick ./okakos-profile/syslinux/splash.jpg -resize 640x480\! ./okakos-profile/syslinux/splash.png 2>/dev/null || true
 
           echo '' >> ./okakos-profile/pacman.conf
-          echo '[artix]' >> ./okakos-profile/pacman.conf
-          echo 'Server = https://mirrors.artixlinux.org/$repo/os/$arch' >> ./okakos-profile/pacman.conf
-          echo 'SigLevel = Optional TrustAll' >> ./okakos-profile/pacman.conf
-          echo '' >> ./okakos-profile/pacman.conf
           echo '[system]' >> ./okakos-profile/pacman.conf
+          echo 'Server = https://mirrors.dotsrc.org/artix-linux/$repo/os/$arch' >> ./okakos-profile/pacman.conf
+          echo 'Server = https://ftp.ntua.gr/artix-linux/$repo/os/$arch' >> ./okakos-profile/pacman.conf
+          echo 'Server = https://mirrors.tuna.tsinghua.edu.cn/artix-linux/$repo/os/$arch' >> ./okakos-profile/pacman.conf
           echo 'Server = https://mirrors.artixlinux.org/$repo/os/$arch' >> ./okakos-profile/pacman.conf
           echo 'SigLevel = Optional TrustAll' >> ./okakos-profile/pacman.conf
           echo '' >> ./okakos-profile/pacman.conf
           echo '[world]' >> ./okakos-profile/pacman.conf
+          echo 'Server = https://mirrors.dotsrc.org/artix-linux/$repo/os/$arch' >> ./okakos-profile/pacman.conf
+          echo 'Server = https://ftp.ntua.gr/artix-linux/$repo/os/$arch' >> ./okakos-profile/pacman.conf
+          echo 'Server = https://mirrors.tuna.tsinghua.edu.cn/artix-linux/$repo/os/$arch' >> ./okakos-profile/pacman.conf
           echo 'Server = https://mirrors.artixlinux.org/$repo/os/$arch' >> ./okakos-profile/pacman.conf
           echo 'SigLevel = Optional TrustAll' >> ./okakos-profile/pacman.conf
           echo '' >> ./okakos-profile/pacman.conf
           echo '[galaxy]' >> ./okakos-profile/pacman.conf
+          echo 'Server = https://mirrors.dotsrc.org/artix-linux/$repo/os/$arch' >> ./okakos-profile/pacman.conf
+          echo 'Server = https://ftp.ntua.gr/artix-linux/$repo/os/$arch' >> ./okakos-profile/pacman.conf
+          echo 'Server = https://mirrors.tuna.tsinghua.edu.cn/artix-linux/$repo/os/$arch' >> ./okakos-profile/pacman.conf
           echo 'Server = https://mirrors.artixlinux.org/$repo/os/$arch' >> ./okakos-profile/pacman.conf
           echo 'SigLevel = Optional TrustAll' >> ./okakos-profile/pacman.conf
           echo '' >> ./okakos-profile/pacman.conf
@@ -323,6 +332,8 @@ jobs:
 
       - name: Build ISO
         run: |
+          echo 'nameserver 8.8.8.8' >> /etc/resolv.conf
+          echo 'nameserver 1.1.1.1' >> /etc/resolv.conf
           mkarchiso -v -w /tmp/archiso-tmp -o /tmp/out ./okakos-profile
 
       - name: Rename ISO
