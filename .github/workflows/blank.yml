@@ -51,6 +51,7 @@ jobs:
       - name: Build Calamares from AUR
         run: |
           su - builder -c "git clone https://aur.archlinux.org/calamares.git /tmp/calamares"
+          su - builder -c "sed -i '/make DESTDIR=\"\$pkgdir\" install/a \    rm -f \"\$pkgdir\"/usr/share/calamares/settings.conf\n    rm -f \"\$pkgdir\"/usr/lib/calamares/modules/shellprocess/shellprocess.conf' /tmp/calamares/PKGBUILD"
           su - builder -c "cd /tmp/calamares && makepkg -s --noconfirm"
           cp /tmp/calamares/*.pkg.tar.zst /tmp/custom_repo/
           repo-add /tmp/custom_repo/custom.db.tar.gz /tmp/custom_repo/*.pkg.tar.zst
@@ -208,12 +209,7 @@ jobs:
           cat packages.x86_64 >> ./okakos-profile/packages.x86_64
 
           sed -i '/^python-simple-term-menu$/d' ./okakos-profile/packages.x86_64
-
-          rm -f ./okakos-profile/airootfs/usr/lib/calamares/modules/shellprocess/shellprocess.conf 2>/dev/null || true
-
-          mkdir -p ./okakos-profile/airootfs/usr/share/calamares/
-          cp ./okakos-profile/airootfs/etc/calamares/settings.conf ./okakos-profile/airootfs/usr/share/calamares/settings.conf 2>/dev/null || true
-
+          
           find ./okakos-profile/airootfs/usr/local/bin/ -type f -exec dos2unix {} \;
           find ./okakos-profile/airootfs/etc/ -name '*.fish' -exec dos2unix {} \;
           find ./okakos-profile/airootfs/etc/ -name '*.sh' -exec dos2unix {} \;
