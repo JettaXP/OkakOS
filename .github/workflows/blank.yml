@@ -16,6 +16,27 @@ jobs:
       options: --privileged
 
     steps:
+      - name: Configure Artix Repositories
+        run: |
+          echo '' >> /etc/pacman.conf
+          echo '[artix]' >> /etc/pacman.conf
+          echo 'Server = https://mirrors.artixlinux.org/artix/os/$arch' >> /etc/pacman.conf
+          echo 'SigLevel = Optional TrustAll' >> /etc/pacman.conf
+          echo '' >> /etc/pacman.conf
+          echo '[system]' >> /etc/pacman.conf
+          echo 'Server = https://mirrors.artixlinux.org/system/os/$arch' >> /etc/pacman.conf
+          echo 'SigLevel = Optional TrustAll' >> /etc/pacman.conf
+          echo '' >> /etc/pacman.conf
+          echo '[world]' >> /etc/pacman.conf
+          echo 'Server = https://mirrors.artixlinux.org/world/os/$arch' >> /etc/pacman.conf
+          echo 'SigLevel = Optional TrustAll' >> /etc/pacman.conf
+          echo '' >> /etc/pacman.conf
+          echo '[galaxy]' >> /etc/pacman.conf
+          echo 'Server = https://mirrors.artixlinux.org/galaxy/os/$arch' >> /etc/pacman.conf
+          echo 'SigLevel = Optional TrustAll' >> /etc/pacman.conf
+          pacman -Sy --noconfirm artix-keyring artix-mirrorlist
+          pacman-key --populate artix
+
       - name: Install base dependencies
         run: |
           pacman -Syu --noconfirm
@@ -92,7 +113,10 @@ jobs:
           \t\tif _os.path.exists(str(installation.target) + "/etc"):
           \t\t\t_t = str(installation.target)
           \t\t\tsubprocess.run(f"cp -a /tmp/custom_repo {_t}/var/tmp/ 2>/dev/null", shell=True)
+          \t\t\tsubprocess.run(f"echo '' >> {_t}/etc/pacman.conf; echo '[artix]' >> {_t}/etc/pacman.conf; echo 'Server = https://mirrors.artixlinux.org/artix/os/$arch' >> {_t}/etc/pacman.conf; echo 'SigLevel = Optional TrustAll' >> {_t}/etc/pacman.conf; echo '' >> {_t}/etc/pacman.conf; echo '[system]' >> {_t}/etc/pacman.conf; echo 'Server = https://mirrors.artixlinux.org/system/os/$arch' >> {_t}/etc/pacman.conf; echo 'SigLevel = Optional TrustAll' >> {_t}/etc/pacman.conf; echo '' >> {_t}/etc/pacman.conf; echo '[world]' >> {_t}/etc/pacman.conf; echo 'Server = https://mirrors.artixlinux.org/world/os/$arch' >> {_t}/etc/pacman.conf; echo 'SigLevel = Optional TrustAll' >> {_t}/etc/pacman.conf", shell=True)
           \t\t\tsubprocess.run(f'echo "" >> {_t}/etc/pacman.conf; echo "[custom]" >> {_t}/etc/pacman.conf; echo "SigLevel = Optional TrustAll" >> {_t}/etc/pacman.conf; echo "Server = file:///var/tmp/custom_repo" >> {_t}/etc/pacman.conf', shell=True)
+          \t\t\tsubprocess.run(f"arch-chroot {_t} pacman -Sy --noconfirm artix-keyring 2>/dev/null || true", shell=True)
+          \t\t\tsubprocess.run(f"arch-chroot {_t} pacman-key --populate artix 2>/dev/null || true", shell=True)
           \t\t\tsubprocess.run(f"arch-chroot {_t} pacman -Sy --noconfirm yay-bin nano git fish fastfetch xdg-user-dirs base-devel sudo polkit reflector firefox", shell=True)
           \t\t\tsubprocess.run(f"mkdir -p {_t}/etc/skel {_t}/usr/share/fastfetch/logos {_t}/usr/local/bin {_t}/etc/fastfetch {_t}/etc/fish {_t}/etc/polkit-1/rules.d {_t}/etc/default", shell=True)
           \t\t\tsubprocess.run(f"cp -a /etc/skel/. {_t}/etc/skel/ 2>/dev/null", shell=True)
@@ -238,10 +262,26 @@ jobs:
           cp airootfs/usr/share/grub/background.jpg ./okakos-profile/syslinux/splash.jpg 2>/dev/null || true
           magick ./okakos-profile/syslinux/splash.jpg -resize 640x480\! ./okakos-profile/syslinux/splash.png 2>/dev/null || true
 
-          echo "" >> ./okakos-profile/pacman.conf
-          echo "[custom]" >> ./okakos-profile/pacman.conf
-          echo "SigLevel = Optional TrustAll" >> ./okakos-profile/pacman.conf
-          echo "Server = file:///tmp/custom_repo" >> ./okakos-profile/pacman.conf
+          echo '' >> ./okakos-profile/pacman.conf
+          echo '[artix]' >> ./okakos-profile/pacman.conf
+          echo 'Server = https://mirrors.artixlinux.org/artix/os/$arch' >> ./okakos-profile/pacman.conf
+          echo 'SigLevel = Optional TrustAll' >> ./okakos-profile/pacman.conf
+          echo '' >> ./okakos-profile/pacman.conf
+          echo '[system]' >> ./okakos-profile/pacman.conf
+          echo 'Server = https://mirrors.artixlinux.org/system/os/$arch' >> ./okakos-profile/pacman.conf
+          echo 'SigLevel = Optional TrustAll' >> ./okakos-profile/pacman.conf
+          echo '' >> ./okakos-profile/pacman.conf
+          echo '[world]' >> ./okakos-profile/pacman.conf
+          echo 'Server = https://mirrors.artixlinux.org/world/os/$arch' >> ./okakos-profile/pacman.conf
+          echo 'SigLevel = Optional TrustAll' >> ./okakos-profile/pacman.conf
+          echo '' >> ./okakos-profile/pacman.conf
+          echo '[galaxy]' >> ./okakos-profile/pacman.conf
+          echo 'Server = https://mirrors.artixlinux.org/galaxy/os/$arch' >> ./okakos-profile/pacman.conf
+          echo 'SigLevel = Optional TrustAll' >> ./okakos-profile/pacman.conf
+          echo '' >> ./okakos-profile/pacman.conf
+          echo '[custom]' >> ./okakos-profile/pacman.conf
+          echo 'SigLevel = Optional TrustAll' >> ./okakos-profile/pacman.conf
+          echo 'Server = file:///tmp/custom_repo' >> ./okakos-profile/pacman.conf
 
           cp -r airootfs/* ./okakos-profile/airootfs/
           echo 'okakinstall' >> ./okakos-profile/packages.x86_64
