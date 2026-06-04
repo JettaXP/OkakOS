@@ -24,7 +24,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Prepare Yay-bin and okakinstall Custom Repo
+      - name: Prepare Yay-bin and Custom Repo
         run: |
           mkdir -p /tmp/custom_repo
           chmod 777 /tmp/custom_repo
@@ -55,67 +55,69 @@ jobs:
           cp /tmp/calamares/*.pkg.tar.zst /tmp/custom_repo/
           repo-add /tmp/custom_repo/custom.db.tar.gz /tmp/custom_repo/*.pkg.tar.zst
 
-      - name: Build python-simple-term-menu from AUR
-        run: |
-          su - builder -c "git clone https://aur.archlinux.org/python-simple-term-menu.git /tmp/python-simple-term-menu"
-          su - builder -c "cd /tmp/python-simple-term-menu && makepkg -s --noconfirm"
-          cp /tmp/python-simple-term-menu/*.pkg.tar.zst /tmp/custom_repo/
-          repo-add /tmp/custom_repo/custom.db.tar.gz /tmp/custom_repo/*.pkg.tar.zst
-
       - name: Build OkakInstall
         run: |
           pacman -Sy
           git clone https://github.com/archlinux/archinstall.git /tmp/okakinstall-src
           cd /tmp/okakinstall-src
-          git checkout v2.8.0
 
           mv archinstall okakinstall
 
           find . -type f -name '*.py' -exec sed -i 's/archinstall/okakinstall/g' {} +
           find . -type f -name '*.py' -exec sed -i 's/Arch Linux/OkakOS 67/g' {} +
           find . -type f -name '*.py' -exec sed -i 's/ArchInstall/OkakInstall/g' {} +
-
           find . -type f \( -name '*.py' -o -name '*.json' \) -exec sed -i 's/xf86-video-vmware/xorg-xinit/g' {} +
-          
-          cat > patch_okakos.py << 'EOF'
-          import os
-          
-          guided_path = 'okakinstall/scripts/guided.py'
-          if os.path.exists(guided_path):
-              with open(guided_path, 'r') as f:
-                  content = f.read()
-                  
-              replace_from_main = 'installation.genfstab()'
-              replace_to_main = """import subprocess, os
-          TABTABif os.path.exists("/mnt/etc"):
-          TABTABTABsubprocess.run("cp -a /tmp/custom_repo /mnt/var/tmp/ 2>/dev/null", shell=True)
-          TABTABTABsubprocess.run('echo "" >> /mnt/etc/pacman.conf; echo "[custom]" >> /mnt/etc/pacman.conf; echo "SigLevel = Optional TrustAll" >> /mnt/etc/pacman.conf; echo "Server = file:///var/tmp/custom_repo" >> /mnt/etc/pacman.conf', shell=True)
-          TABTABTABsubprocess.run("arch-chroot /mnt pacman -Sy --noconfirm yay-bin nano git fish fastfetch xdg-user-dirs base-devel sudo polkit reflector firefox python-pyqt5", shell=True)
-          TABTABTABsubprocess.run("mkdir -p /mnt/etc/skel /mnt/usr/share/fastfetch/logos /mnt/usr/local/bin /mnt/etc/fastfetch /mnt/etc/fish /mnt/etc/polkit-1/rules.d /mnt/etc/default", shell=True)
-          TABTABTABsubprocess.run("cp -a /etc/skel/. /mnt/etc/skel/ 2>/dev/null", shell=True)
-          TABTABTABsubprocess.run("cp -a /etc/fish/. /mnt/etc/fish/ 2>/dev/null", shell=True)
-          TABTABTABsubprocess.run("cp -a /etc/fastfetch/. /mnt/etc/fastfetch/ 2>/dev/null", shell=True)
-          TABTABTABsubprocess.run("cp -a /etc/default/grub /mnt/etc/default/grub 2>/dev/null", shell=True)
-          TABTABTABsubprocess.run("cp -a /usr/share/backgrounds /mnt/usr/share/ 2>/dev/null", shell=True)
-          TABTABTABsubprocess.run("cp -a /usr/share/gnome-background-properties /mnt/usr/share/ 2>/dev/null", shell=True)
-          TABTABTABsubprocess.run("cp -a /usr/share/grub /mnt/usr/share/ 2>/dev/null", shell=True)
-          TABTABTABsubprocess.run("cp -a /usr/share/fastfetch/logos/okakos /mnt/usr/share/fastfetch/logos/okakos 2>/dev/null", shell=True)
-          TABTABTABsubprocess.run("cp -a /usr/share/applications /mnt/usr/share/ 2>/dev/null", shell=True)
-          TABTABTABsubprocess.run("rm -f /mnt/usr/share/applications/okakinstall.desktop /mnt/usr/share/applications/calamares.desktop 2>/dev/null", shell=True)
-          TABTABTABsubprocess.run("cp -a /usr/local/bin/* /mnt/usr/local/bin/ 2>/dev/null", shell=True)
-          TABTABTABsubprocess.run("cp -a /etc/polkit-1/rules.d/* /mnt/etc/polkit-1/rules.d/ 2>/dev/null", shell=True)
-          TABTABTABsubprocess.run("chmod +x /mnt/usr/local/bin/* 2>/dev/null", shell=True)
-          TABTABTABsubprocess.run("cp /usr/local/bin/okakos-post-install.sh /mnt/root/ && arch-chroot /mnt bash /root/okakos-post-install.sh && rm -f /mnt/root/okakos-post-install.sh", shell=True)
-          TABTABinstallation.genfstab()""".replace("TAB", chr(9))
-              content = content.replace(replace_from_main, replace_to_main)
-              with open(guided_path, 'w') as f:
-                  f.write(content)
-          EOF
-          sed -i 's/^          //' patch_okakos.py
+
+          cat > patch_okakos.py << 'PYEOF'
+import os, re
+
+guided_path = 'okakinstall/scripts/guided.py'
+if os.path.exists(guided_path):
+    with open(guided_path, 'r') as f:
+        content = f.read()
+
+    old = 'installation.genfstab()'
+    new = """import subprocess, os as _os
+\t\tif _os.path.exists(str(installation.target) + "/etc"):
+\t\t\t_t = str(installation.target)
+\t\t\tsubprocess.run(f"cp -a /tmp/custom_repo {_t}/var/tmp/ 2>/dev/null", shell=True)
+\t\t\tsubprocess.run(f'echo "" >> {_t}/etc/pacman.conf; echo "[custom]" >> {_t}/etc/pacman.conf; echo "SigLevel = Optional TrustAll" >> {_t}/etc/pacman.conf; echo "Server = file:///var/tmp/custom_repo" >> {_t}/etc/pacman.conf', shell=True)
+\t\t\tsubprocess.run(f"arch-chroot {_t} pacman -Sy --noconfirm yay-bin nano git fish fastfetch xdg-user-dirs base-devel sudo polkit reflector firefox", shell=True)
+\t\t\tsubprocess.run(f"mkdir -p {_t}/etc/skel {_t}/usr/share/fastfetch/logos {_t}/usr/local/bin {_t}/etc/fastfetch {_t}/etc/fish {_t}/etc/polkit-1/rules.d {_t}/etc/default", shell=True)
+\t\t\tsubprocess.run(f"cp -a /etc/skel/. {_t}/etc/skel/ 2>/dev/null", shell=True)
+\t\t\tsubprocess.run(f"cp -a /etc/fish/. {_t}/etc/fish/ 2>/dev/null", shell=True)
+\t\t\tsubprocess.run(f"cp -a /etc/fastfetch/. {_t}/etc/fastfetch/ 2>/dev/null", shell=True)
+\t\t\tsubprocess.run(f"cp -a /etc/default/grub {_t}/etc/default/grub 2>/dev/null", shell=True)
+\t\t\tsubprocess.run(f"cp -a /usr/share/backgrounds {_t}/usr/share/ 2>/dev/null", shell=True)
+\t\t\tsubprocess.run(f"cp -a /usr/share/gnome-background-properties {_t}/usr/share/ 2>/dev/null", shell=True)
+\t\t\tsubprocess.run(f"cp -a /usr/share/grub {_t}/usr/share/ 2>/dev/null", shell=True)
+\t\t\tsubprocess.run(f"cp -a /usr/share/fastfetch/logos/okakos {_t}/usr/share/fastfetch/logos/okakos 2>/dev/null", shell=True)
+\t\t\tsubprocess.run(f"cp -a /usr/share/applications {_t}/usr/share/ 2>/dev/null", shell=True)
+\t\t\tsubprocess.run(f"rm -f {_t}/usr/share/applications/okakinstall.desktop {_t}/usr/share/applications/calamares.desktop 2>/dev/null", shell=True)
+\t\t\tsubprocess.run(f"cp -a /usr/local/bin/* {_t}/usr/local/bin/ 2>/dev/null", shell=True)
+\t\t\tsubprocess.run(f"cp -a /etc/polkit-1/rules.d/* {_t}/etc/polkit-1/rules.d/ 2>/dev/null", shell=True)
+\t\t\tsubprocess.run(f"chmod +x {_t}/usr/local/bin/* 2>/dev/null", shell=True)
+\t\t\tsubprocess.run(f"cp /usr/local/bin/okakos-post-install.sh {_t}/root/ && arch-chroot {_t} bash /root/okakos-post-install.sh && rm -f {_t}/root/okakos-post-install.sh", shell=True)
+\t\tinstallation.genfstab()"""
+
+    content = content.replace(old, new)
+    with open(guided_path, 'w') as f:
+        f.write(content)
+    print("[OK] Patched guided.py")
+else:
+    print("[WARN] guided.py not found at", guided_path)
+
+version_path = 'okakinstall/lib/version.py'
+if os.path.exists(version_path):
+    with open(version_path, 'w') as f:
+        f.write("def get_version() -> str:\n\treturn 'OkakOS 67'\n")
+    print("[OK] Patched version.py")
+PYEOF
           python patch_okakos.py
 
           sed -i 's/archinstall/okakinstall/g' pyproject.toml
           sed -i 's/Arch Linux/OkakOS 67/g' pyproject.toml
+          sed -i 's/archinstall\.main:main/okakinstall.main:main/g' pyproject.toml
 
           find . -type f \( -name '*.po' -o -name '*.pot' \) -exec sed -i 's/archinstall/okakinstall/g' {} +
           find . -type f \( -name '*.po' -o -name '*.pot' \) -exec sed -i 's/Arch Linux/OkakOS 67/g' {} +
@@ -130,45 +132,44 @@ jobs:
           cp /tmp/okakinstall-src/dist/*.whl /tmp/okakinstall-pkg/
 
           cat > /tmp/okakinstall-pkg/PKGBUILD << 'PKGEOF'
-          pkgname=okakinstall
-          pkgver=1.0
-          pkgrel=1
-          pkgdesc='OkakOS 67 Installer'
-          arch=('any')
-          license=('GPL-3.0-only')
-          depends=(
-            'arch-install-scripts'
-            'btrfs-progs'
-            'coreutils'
-            'cryptsetup'
-            'dosfstools'
-            'e2fsprogs'
-            'f2fs-tools'
-            'glibc'
-            'kbd'
-            'libcrypt.so'
-            'libfido2'
-            'libxcrypt'
-            'lvm2'
-            'pciutils'
-            'procps-ng'
-            'python'
-            'python-cryptography'
-            'python-linkify-it-py'
-            'python-markdown-it-py'
-            'python-pydantic'
-            'python-simple-term-menu'
-            'python-pyparted'
-            'python-textual'
-            'systemd'
-            'util-linux'
-            'xfsprogs'
-          )
-          
-          package() {
-              python -m installer --destdir="$pkgdir" /tmp/okakinstall-pkg/*.whl
-          }
-          PKGEOF
+pkgname=okakinstall
+pkgver=1.0
+pkgrel=1
+pkgdesc='OkakOS 67 Installer'
+arch=('any')
+license=('GPL-3.0-only')
+depends=(
+  'arch-install-scripts'
+  'btrfs-progs'
+  'coreutils'
+  'cryptsetup'
+  'dosfstools'
+  'e2fsprogs'
+  'f2fs-tools'
+  'glibc'
+  'kbd'
+  'libcrypt.so'
+  'libfido2'
+  'libxcrypt'
+  'lvm2'
+  'pciutils'
+  'procps-ng'
+  'python'
+  'python-cryptography'
+  'python-linkify-it-py'
+  'python-markdown-it-py'
+  'python-pydantic'
+  'python-pyparted'
+  'python-textual'
+  'systemd'
+  'util-linux'
+  'xfsprogs'
+)
+
+package() {
+    python -m installer --destdir="$pkgdir" /tmp/okakinstall-pkg/*.whl
+}
+PKGEOF
           sed -i 's/^          //' /tmp/okakinstall-pkg/PKGBUILD
 
           chown -R builder:builder /tmp/okakinstall-pkg
@@ -204,6 +205,13 @@ jobs:
           echo 'yay-bin' >> ./okakos-profile/packages.x86_64
           cat packages.x86_64 >> ./okakos-profile/packages.x86_64
 
+          sed -i '/^python-simple-term-menu$/d' ./okakos-profile/packages.x86_64
+
+          rm -f ./okakos-profile/airootfs/usr/lib/calamares/modules/shellprocess/shellprocess.conf 2>/dev/null || true
+
+          mkdir -p ./okakos-profile/airootfs/usr/share/calamares/
+          cp ./okakos-profile/airootfs/etc/calamares/settings.conf ./okakos-profile/airootfs/usr/share/calamares/settings.conf 2>/dev/null || true
+
           find ./okakos-profile/airootfs/usr/local/bin/ -type f -exec dos2unix {} \;
           find ./okakos-profile/airootfs/etc/ -name '*.fish' -exec dos2unix {} \;
           find ./okakos-profile/airootfs/etc/ -name '*.sh' -exec dos2unix {} \;
@@ -217,7 +225,6 @@ jobs:
           ln -sf /etc/systemd/system/okakos67.service ./okakos-profile/airootfs/etc/systemd/system/multi-user.target.wants/okakos67.service
           ln -sf /usr/lib/systemd/system/NetworkManager.service ./okakos-profile/airootfs/etc/systemd/system/multi-user.target.wants/NetworkManager.service
 
-          sed -i 's|/usr/bin/zsh|/usr/bin/fish|g' ./okakos-profile/airootfs/etc/passwd 2>/dev/null || true
           sed -i 's|/usr/bin/zsh|/usr/bin/fish|g' ./okakos-profile/airootfs/etc/passwd 2>/dev/null || true
           chmod +x ./okakos-profile/airootfs/usr/local/bin/*
 
