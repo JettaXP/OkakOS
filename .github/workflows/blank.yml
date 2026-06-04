@@ -55,7 +55,7 @@ jobs:
 
           mkdir -p /tmp/cala-repack
           cd /tmp/cala-repack
-          CALA_PKG=$(ls /tmp/calamares/calamares-*.pkg.tar.zst)
+          CALA_PKG=$(find /tmp/calamares -maxdepth 1 -name 'calamares-[0-9]*.pkg.tar.zst' | head -1)
           tar xf "$CALA_PKG"
           rm -f usr/share/calamares/settings.conf
           rm -f usr/lib/calamares/modules/shellprocess/shellprocess.conf
