@@ -235,6 +235,9 @@ jobs:
         run: |
           cp -r /usr/share/archiso/configs/releng ./okakos-profile
 
+          # Fix [core] and [extra] to use Arch mirrorlist (artix-archlinux-support provides mirrorlist-arch)
+          sed -i 's|Include = /etc/pacman.d/mirrorlist$|Include = /etc/pacman.d/mirrorlist-arch|g' ./okakos-profile/pacman.conf
+
           sed -i '/^archinstall$/d' ./okakos-profile/packages.x86_64
           sed -i '/^zsh$/d' ./okakos-profile/packages.x86_64
           sed -i '/^grml-zsh-config$/d' ./okakos-profile/packages.x86_64
@@ -251,27 +254,19 @@ jobs:
 
           echo '' >> ./okakos-profile/pacman.conf
           echo '[artix]' >> ./okakos-profile/pacman.conf
-          echo 'Server = https://mirror1.artixlinux.org/$repo/os/$arch' >> ./okakos-profile/pacman.conf
-          echo 'Server = https://mirrors.dotsrc.org/artix-linux/$repo/os/$arch' >> ./okakos-profile/pacman.conf
-          echo 'Server = https://ftp.crifo.org/artix-linux/$repo/os/$arch' >> ./okakos-profile/pacman.conf
+          echo 'Include = /etc/pacman.d/mirrorlist' >> ./okakos-profile/pacman.conf
           echo 'SigLevel = Optional TrustAll' >> ./okakos-profile/pacman.conf
           echo '' >> ./okakos-profile/pacman.conf
           echo '[system]' >> ./okakos-profile/pacman.conf
-          echo 'Server = https://mirror1.artixlinux.org/$repo/os/$arch' >> ./okakos-profile/pacman.conf
-          echo 'Server = https://mirrors.dotsrc.org/artix-linux/$repo/os/$arch' >> ./okakos-profile/pacman.conf
-          echo 'Server = https://ftp.crifo.org/artix-linux/$repo/os/$arch' >> ./okakos-profile/pacman.conf
+          echo 'Include = /etc/pacman.d/mirrorlist' >> ./okakos-profile/pacman.conf
           echo 'SigLevel = Optional TrustAll' >> ./okakos-profile/pacman.conf
           echo '' >> ./okakos-profile/pacman.conf
           echo '[world]' >> ./okakos-profile/pacman.conf
-          echo 'Server = https://mirror1.artixlinux.org/$repo/os/$arch' >> ./okakos-profile/pacman.conf
-          echo 'Server = https://mirrors.dotsrc.org/artix-linux/$repo/os/$arch' >> ./okakos-profile/pacman.conf
-          echo 'Server = https://ftp.crifo.org/artix-linux/$repo/os/$arch' >> ./okakos-profile/pacman.conf
+          echo 'Include = /etc/pacman.d/mirrorlist' >> ./okakos-profile/pacman.conf
           echo 'SigLevel = Optional TrustAll' >> ./okakos-profile/pacman.conf
           echo '' >> ./okakos-profile/pacman.conf
           echo '[galaxy]' >> ./okakos-profile/pacman.conf
-          echo 'Server = https://mirror1.artixlinux.org/$repo/os/$arch' >> ./okakos-profile/pacman.conf
-          echo 'Server = https://mirrors.dotsrc.org/artix-linux/$repo/os/$arch' >> ./okakos-profile/pacman.conf
-          echo 'Server = https://ftp.crifo.org/artix-linux/$repo/os/$arch' >> ./okakos-profile/pacman.conf
+          echo 'Include = /etc/pacman.d/mirrorlist' >> ./okakos-profile/pacman.conf
           echo 'SigLevel = Optional TrustAll' >> ./okakos-profile/pacman.conf
           echo '' >> ./okakos-profile/pacman.conf
           echo '[custom]' >> ./okakos-profile/pacman.conf
