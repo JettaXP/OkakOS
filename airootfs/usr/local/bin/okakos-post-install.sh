@@ -88,4 +88,12 @@ echo "[OkakOS] Live-ISO artifacts cleaned"
 
 mkdir -p /etc/fish/conf.d
 
+if ! grep -q "permit persist :wheel" /etc/doas.conf 2>/dev/null; then
+    cat > /etc/doas.conf << 'DOASEOF'
+permit persist :wheel
+permit nopass root
+DOASEOF
+    chmod 0400 /etc/doas.conf
+fi
+
 echo "[OkakOS] Post-install complete!"

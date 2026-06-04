@@ -1,6 +1,11 @@
 if status is-login
     fish_add_path ~/.local/bin
 end
+
+function sudo
+    doas $argv
+end
+
 if status is-interactive
     set fish_greeting
     function fish_prompt

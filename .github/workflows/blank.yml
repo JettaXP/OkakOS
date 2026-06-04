@@ -89,9 +89,9 @@ jobs:
           find . -type f -name '*.py' -exec sed -i 's/ArchInstall/OkakInstall/g' {} +
           find . -type f \( -name '*.py' -o -name '*.json' \) -exec sed -i 's/xf86-video-vmware/xorg-xinit/g' {} +
 
-          cat > patch_okakos.py << 'PYEOF'
+          python3 - << 'PYEOF'
           import os, re, glob
-          
+
           guided_path = 'okakinstall/scripts/guided.py'
           if os.path.exists(guided_path):
               with open(guided_path, 'r') as f:
@@ -106,7 +106,7 @@ jobs:
           \t\t\tsubprocess.run(f'echo "" >> {_t}/etc/pacman.conf; echo "[custom]" >> {_t}/etc/pacman.conf; echo "SigLevel = Optional TrustAll" >> {_t}/etc/pacman.conf; echo "Server = file:///var/tmp/custom_repo" >> {_t}/etc/pacman.conf', shell=True)
           \t\t\tsubprocess.run(f"arch-chroot {_t} pacman -Sy --noconfirm artix-keyring 2>/dev/null || true", shell=True)
           \t\t\tsubprocess.run(f"arch-chroot {_t} pacman-key --populate artix 2>/dev/null || true", shell=True)
-          \t\t\tsubprocess.run(f"arch-chroot {_t} pacman -Sy --noconfirm yay-bin nano git fish fastfetch xdg-user-dirs base-devel sudo polkit reflector firefox", shell=True)
+          \t\t\tsubprocess.run(f"arch-chroot {_t} pacman -Sy --noconfirm yay-bin nano git fish fastfetch xdg-user-dirs base-devel sudo opendoas polkit reflector firefox", shell=True)
           \t\t\tsubprocess.run(f"mkdir -p {_t}/etc/skel {_t}/usr/share/fastfetch/logos {_t}/usr/local/bin {_t}/etc/fastfetch {_t}/etc/fish {_t}/etc/polkit-1/rules.d {_t}/etc/default", shell=True)
           \t\t\tsubprocess.run(f"cp -a /etc/skel/. {_t}/etc/skel/ 2>/dev/null", shell=True)
           \t\t\tsubprocess.run(f"cp -a /etc/fish/. {_t}/etc/fish/ 2>/dev/null", shell=True)
@@ -168,8 +168,6 @@ jobs:
                   pass
           print("[OK] Patched systemd -> OpenRC in all Python files")
           PYEOF
-          sed -i 's/^          //' patch_okakos.py
-          python patch_okakos.py
 
           sed -i 's/archinstall/okakinstall/g' pyproject.toml
           sed -i 's/Arch Linux/OkakOS 67/g' pyproject.toml
@@ -324,6 +322,7 @@ jobs:
             echo "  ['/usr/local/bin/67wm-troll']='0:0:755'" >> ./okakos-profile/profiledef.sh
             echo "  ['/usr/local/bin/start-67wm']='0:0:755'" >> ./okakos-profile/profiledef.sh
             echo "  ['/usr/local/bin/okakinstall']='0:0:755'" >> ./okakos-profile/profiledef.sh
+            echo "  ['/etc/doas.conf']='0:0:400'" >> ./okakos-profile/profiledef.sh
             echo ")" >> ./okakos-profile/profiledef.sh
           fi
 
