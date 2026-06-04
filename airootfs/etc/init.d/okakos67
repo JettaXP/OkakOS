@@ -1,0 +1,14 @@
+#!/sbin/openrc-run
+
+description="OkakOS 67 Live Session Setup"
+
+depend() {
+    after localmount
+    before display-manager
+}
+
+start() {
+    ebegin "Running OkakOS live setup"
+    /bin/bash /usr/local/bin/okakos-live-setup.sh
+    eend $?
+}

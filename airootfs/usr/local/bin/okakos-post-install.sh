@@ -54,8 +54,8 @@ if [ -n "$NEW_USER" ] && command -v fish &> /dev/null; then
     echo "[OkakOS] Fish shell set for $NEW_USER"
 fi
 
-systemctl enable sddm.service -f 2>/dev/null || true
-systemctl enable NetworkManager.service -f 2>/dev/null || true
+rc-update add sddm default 2>/dev/null || true
+rc-update add NetworkManager default 2>/dev/null || true
 
 echo "[OkakOS] Services enabled"
 
@@ -70,9 +70,9 @@ fi
 echo "[OkakOS] Hostname configured"
 
 rm -f /etc/sddm.conf.d/autologin.conf 2>/dev/null || true
-rm -f /etc/systemd/system/okakos67.service 2>/dev/null || true
-rm -f /etc/systemd/system/multi-user.target.wants/okakos67.service 2>/dev/null || true
-rm -f /etc/systemd/system/getty@tty1.service.d/autologin.conf 2>/dev/null || true
+rm -f /etc/runlevels/default/okakos67 2>/dev/null || true
+rm -f /etc/init.d/okakos67 2>/dev/null || true
+rm -f /etc/conf.d/agetty.tty1 2>/dev/null || true
 rm -rf /etc/calamares 2>/dev/null || true
 rm -f /root/.config/fish/conf.d/plasma-autostart.fish 2>/dev/null || true
 

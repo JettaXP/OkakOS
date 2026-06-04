@@ -23,3 +23,5 @@ polkit
 reflector
 python-simple-term-menu
 python-pydantic
+openrc
+elogind

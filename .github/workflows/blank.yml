@@ -173,7 +173,7 @@ jobs:
             'python-pydantic'
             'python-pyparted'
             'python-textual'
-            'systemd'
+            'openrc'
             'util-linux'
             'xfsprogs'
           )
@@ -223,14 +223,16 @@ jobs:
           find ./okakos-profile/airootfs/etc/ -name '*.fish' -exec dos2unix {} \;
           find ./okakos-profile/airootfs/etc/ -name '*.sh' -exec dos2unix {} \;
           find ./okakos-profile/airootfs/etc/ -name '*.conf' -exec dos2unix {} \;
-          find ./okakos-profile/airootfs/etc/ -name '*.service' -exec dos2unix {} \;
+          find ./okakos-profile/airootfs/etc/init.d/ -type f -exec dos2unix {} \;
+          find ./okakos-profile/airootfs/etc/conf.d/ -type f -exec dos2unix {} \;
           find ./okakos-profile/airootfs/etc/ -name '*.desktop' -exec dos2unix {} \;
           find ./okakos-profile/airootfs/usr/share/applications/ -name '*.desktop' -exec dos2unix {} \;
           find ./okakos-profile/airootfs/root/ -name '*.fish' -exec dos2unix {} \;
 
-          mkdir -p ./okakos-profile/airootfs/etc/systemd/system/multi-user.target.wants/
-          ln -sf /etc/systemd/system/okakos67.service ./okakos-profile/airootfs/etc/systemd/system/multi-user.target.wants/okakos67.service
-          ln -sf /usr/lib/systemd/system/NetworkManager.service ./okakos-profile/airootfs/etc/systemd/system/multi-user.target.wants/NetworkManager.service
+          mkdir -p ./okakos-profile/airootfs/etc/runlevels/default/
+          chmod +x ./okakos-profile/airootfs/etc/init.d/okakos67
+          ln -sf /etc/init.d/okakos67 ./okakos-profile/airootfs/etc/runlevels/default/okakos67
+          ln -sf /etc/init.d/NetworkManager ./okakos-profile/airootfs/etc/runlevels/default/NetworkManager
 
           sed -i 's|/usr/bin/zsh|/usr/bin/fish|g' ./okakos-profile/airootfs/etc/passwd 2>/dev/null || true
           chmod +x ./okakos-profile/airootfs/usr/local/bin/*
