@@ -36,6 +36,7 @@
 <a href="https://github.com/JettaXP/OkakOS/tree/claude/systemd-openrc-migration-2sar5"><img src="https://img.shields.io/badge/🔧-OpenRC-FF9800?style=for-the-badge" alt="OpenRC" /></a>
 
 **`main`** — классическая версия на systemd &nbsp;|&nbsp; **`openrc`** — версия на OpenRC для минималистов
+#! openrc version made by vcvkk
 
 </div>
 
