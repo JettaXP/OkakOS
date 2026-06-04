@@ -80,7 +80,7 @@ jobs:
           find . -type f \( -name '*.py' -o -name '*.json' \) -exec sed -i 's/xf86-video-vmware/xorg-xinit/g' {} +
 
           cat > patch_okakos.py << 'PYEOF'
-          import os, re
+          import os, re, glob
           
           guided_path = 'okakinstall/scripts/guided.py'
           if os.path.exists(guided_path):
@@ -123,6 +123,37 @@ jobs:
               with open(version_path, 'w') as f:
                   f.write("def get_version() -> str:\n\treturn 'OkakOS 67'\n")
               print("[OK] Patched version.py")
+
+          for py_file in glob.glob('./**/*.py', recursive=True):
+              try:
+                  with open(py_file, 'r') as f:
+                      content = f.read()
+                  original = content
+                  content = re.sub(r"""f'systemctl enable \{"--now " if \w+ else ""\}\{(\w+)\}'""", r"f'rc-update add {\1} default'", content)
+                  content = re.sub(r"f'systemctl enable \{(\w+)\}'", r"f'rc-update add {\1} default'", content)
+                  content = re.sub(r'f"systemctl enable \{(\w+)\}"', r'f"rc-update add {\1} default"', content)
+                  content = re.sub(r"'systemctl enable --now ([^']*)'", r"'rc-service \1 start'", content)
+                  content = re.sub(r"'systemctl enable ([^']*)'", r"'rc-update add \1 default'", content)
+                  content = re.sub(r"'systemctl disable ([^']*)'", r"'rc-update del \1 default'", content)
+                  content = re.sub(r"'systemctl start ([^']*)'", r"'rc-service \1 start'", content)
+                  content = re.sub(r"'systemctl stop ([^']*)'", r"'rc-service \1 stop'", content)
+                  content = re.sub(r"'systemctl restart ([^']*)'", r"'rc-service \1 restart'", content)
+                  content = re.sub(r'"systemctl enable --now ([^"]*)"', r'"rc-service \1 start"', content)
+                  content = re.sub(r'"systemctl enable ([^"]*)"', r'"rc-update add \1 default"', content)
+                  content = re.sub(r'"systemctl disable ([^"]*)"', r'"rc-update del \1 default"', content)
+                  content = re.sub(r'"systemctl start ([^"]*)"', r'"rc-service \1 start"', content)
+                  content = re.sub(r'"systemctl stop ([^"]*)"', r'"rc-service \1 stop"', content)
+                  content = re.sub(r'"systemctl restart ([^"]*)"', r'"rc-service \1 restart"', content)
+                  for cmd in [' default', ' start', ' stop', ' restart']:
+                      content = content.replace('.service' + cmd, cmd)
+                  content = content.replace('systemd-networkd', 'NetworkManager')
+                  content = content.replace('systemd-resolved', 'NetworkManager')
+                  if content != original:
+                      with open(py_file, 'w') as f:
+                          f.write(content)
+              except Exception:
+                  pass
+          print("[OK] Patched systemd -> OpenRC in all Python files")
           PYEOF
           sed -i 's/^          //' patch_okakos.py
           python patch_okakos.py
