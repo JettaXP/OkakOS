@@ -18,6 +18,10 @@ jobs:
     steps:
       - name: Install base dependencies
         run: |
+          # Force reliable community mirrors for Artix because default CDN has DNS issues in Github Actions
+          echo 'Server = https://mirror.pascalpuffke.de/artix-linux/repos/$repo/os/$arch' > /etc/pacman.d/mirrorlist
+          echo 'Server = https://ftp.crifo.org/artix-linux/repos/$repo/os/$arch' >> /etc/pacman.d/mirrorlist
+          echo 'Server = https://mirrors.dotsrc.org/artix-linux/repos/$repo/os/$arch' >> /etc/pacman.d/mirrorlist
           pacman-key --init
           pacman-key --populate artix
           pacman -Sy --noconfirm
@@ -236,7 +240,6 @@ jobs:
       - name: Prepare OkakOS Profile
         run: |
           cp -r /usr/share/archiso/configs/releng ./okakos-profile
-          echo 'Server = https://mirrors.artixlinux.org/repos/$repo/os/$arch' > ./okakos-profile/pacman.d/mirrorlist 2>/dev/null || true
           
           # Fix [core] and [extra] to use Arch mirrors
           sed -i '/^\[core\]/,/^\[/ s|Include = /etc/pacman.d/mirrorlist$|Include = /etc/pacman.d/mirrorlist-arch|' ./okakos-profile/pacman.conf
