@@ -238,9 +238,9 @@ jobs:
           cp -r /usr/share/archiso/configs/releng ./okakos-profile
           echo 'Server = https://mirrors.artixlinux.org/repos/$repo/os/$arch' > ./okakos-profile/pacman.d/mirrorlist 2>/dev/null || true
           
-          echo "" >> ./okakos-profile/pacman.conf
-          echo "[extra]" >> ./okakos-profile/pacman.conf
-          echo "Include = /etc/pacman.d/mirrorlist-arch" >> ./okakos-profile/pacman.conf
+          # Fix [core] and [extra] to use Arch mirrors
+          sed -i '/^\[core\]/,/^\[/ s|Include = /etc/pacman.d/mirrorlist$|Include = /etc/pacman.d/mirrorlist-arch|' ./okakos-profile/pacman.conf
+          sed -i '/^\[extra\]/,/^\[/ s|Include = /etc/pacman.d/mirrorlist$|Include = /etc/pacman.d/mirrorlist-arch|' ./okakos-profile/pacman.conf
           sed -i '/^archinstall$/d' ./okakos-profile/packages.x86_64
           sed -i '/^zsh$/d' ./okakos-profile/packages.x86_64
           sed -i '/^grml-zsh-config$/d' ./okakos-profile/packages.x86_64
@@ -331,8 +331,6 @@ jobs:
 
       - name: Build ISO
         run: |
-          echo 'nameserver 8.8.8.8' >> /etc/resolv.conf
-          echo 'nameserver 1.1.1.1' >> /etc/resolv.conf
           mkarchiso -v -w /tmp/archiso-tmp -o /tmp/out ./okakos-profile
 
       - name: Rename ISO
