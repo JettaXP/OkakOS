@@ -18,8 +18,6 @@ jobs:
     steps:
       - name: Install base dependencies
         run: |
-          echo 'nameserver 8.8.8.8' >> /etc/resolv.conf
-          echo 'nameserver 1.1.1.1' >> /etc/resolv.conf
           pacman-key --init
           pacman-key --populate artix
           pacman -Sy --noconfirm
@@ -238,10 +236,11 @@ jobs:
       - name: Prepare OkakOS Profile
         run: |
           cp -r /usr/share/archiso/configs/releng ./okakos-profile
-
-          # Fix [core] and [extra] to use Arch mirrorlist (artix-archlinux-support provides mirrorlist-arch)
-          sed -i 's|Include = /etc/pacman.d/mirrorlist$|Include = /etc/pacman.d/mirrorlist-arch|g' ./okakos-profile/pacman.conf
-
+          echo 'Server = https://mirrors.artixlinux.org/repos/$repo/os/$arch' > ./okakos-profile/pacman.d/mirrorlist 2>/dev/null || true
+          
+          echo "" >> ./okakos-profile/pacman.conf
+          echo "[extra]" >> ./okakos-profile/pacman.conf
+          echo "Include = /etc/pacman.d/mirrorlist-arch" >> ./okakos-profile/pacman.conf
           sed -i '/^archinstall$/d' ./okakos-profile/packages.x86_64
           sed -i '/^zsh$/d' ./okakos-profile/packages.x86_64
           sed -i '/^grml-zsh-config$/d' ./okakos-profile/packages.x86_64
