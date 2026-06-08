@@ -2,7 +2,7 @@ name: Build OkakOS ISO
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "claude/systemd-openrc-migration-2sar5" ]
   workflow_dispatch:
 
 permissions:
