@@ -72,7 +72,6 @@ echo "[OkakOS] Hostname configured"
 rm -f /etc/sddm.conf.d/autologin.conf 2>/dev/null || true
 rm -f /etc/systemd/system/okakos67.service 2>/dev/null || true
 rm -f /etc/systemd/system/multi-user.target.wants/okakos67.service 2>/dev/null || true
-rm -f /etc/systemd/system/getty@tty1.service.d/autologin.conf 2>/dev/null || true
 rm -rf /etc/calamares 2>/dev/null || true
 rm -f /root/.config/fish/conf.d/plasma-autostart.fish 2>/dev/null || true
 

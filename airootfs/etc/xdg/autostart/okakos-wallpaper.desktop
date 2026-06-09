@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=OkakOS Wallpaper Setup
+Exec=sh -c "if [ ! -f ~/.config/okakos-wallpaper-set ]; then plasma-apply-wallpaperimage /usr/share/backgrounds/professore.jpg && touch ~/.config/okakos-wallpaper-set; fi"
+NoDisplay=true
+X-KDE-autostart-phase=1
